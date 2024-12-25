@@ -1,0 +1,99 @@
+/* Base Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom right, #e0f2f1, #80deea);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: #ffffff;
+    max-width: 900px;
+    width: 90%;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #00796b;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* Button Grid */
+.options {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, transform 0.2s;
+}
+
+/* Specific Button Styles */
+#import-template {
+    background: #00796b;
+    color: #fff;
+}
+
+#import-template:hover {
+    background: #004d40;
+    transform: translateY(-5px);
+}
+
+#explore-templates {
+    background: #80cbc4;
+    color: #004d40;
+}
+
+#explore-templates:hover {
+    background: #4db6ac;
+    transform: translateY(-5px);
+}
+
+/* Empty Message */
+#empty-message {
+    margin-top: 30px;
+    color: #00796b;
+    font-size: 1.2rem;
+}
+
+.hidden {
+    display: none;
+}

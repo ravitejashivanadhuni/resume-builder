@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Score Dashboard</title>
+    <link rel="stylesheet" href="ats_score_dashboard.css">
+</head>
+<body>
+    <div class="container">
+        <h1>ATS Score Checker</h1>
+        <p>Analyze your resume for better ATS compatibility and get improvement suggestions.</p>
+
+        <div class="options">
+            <button id="import-resume" class="btn-primary">Import Existing Resume</button>
+            <button id="check-score" class="btn-secondary" disabled>Check ATS Score</button>
+        </div>
+
+        <div id="file-upload-section" class="hidden">
+            <form id="upload-form" class="upload-form">
+                <input type="file" id="resume-file" accept=".docx, .pdf" required>
+                <button type="submit" class="btn-primary">Upload</button>
+            </form>
+        </div>
+
+        <div id="score-result-section" class="hidden">
+            <h2>ATS Score: <span id="ats-score">0</span>/100</h2>
+            <div id="improvement-suggestions">
+                <h3>Suggestions to Improve Your Resume:</h3>
+                <ul id="suggestions-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="ats_score_dashboard.js"></script>
+</body>
+</html>

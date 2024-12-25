@@ -1,0 +1,172 @@
+/* General Body Styling */
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #e3f2fd, #80deea); /* Light blue to light cyan gradient */
+    color: #333;
+}
+
+/* Container Styling */
+.container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 40px;
+    text-align: center;
+    background: #ffffff; /* Clean white background for content area */
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); /* Slightly deeper shadow for a floating effect */
+    border: 1px solid #80deea; /* Soft cyan border to make the container stand out */
+}
+
+/* Title and Description */
+h1 {
+    font-size: 2.8rem;
+    font-weight: 600;
+    color: #00796b; /* Fresh teal for a calming yet professional look */
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+p {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+/* Experience Grid */
+.experience-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three cards per row */
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+@media (max-width: 900px) {
+    .experience-grid {
+        grid-template-columns: repeat(2, 1fr); /* Two cards on medium screens */
+    }
+}
+
+@media (max-width: 600px) {
+    .experience-grid {
+        grid-template-columns: 1fr; /* Single column on small screens */
+    }
+}
+
+/* Experience Cards Styling */
+.experience-card {
+    background: #ffffff;
+    border: 2px solid #00796b; /* Teal border for a consistent theme */
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    color: #333;
+    background-color: #f1f8f6; /* Light grayish-green background for subtle contrast */
+}
+
+.experience-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Icon Styling */
+.icon {
+    font-size: 3.5rem;
+    color: #00796b;
+    margin-bottom: 20px;
+    transition: color 0.3s ease;
+}
+
+.icon:hover {
+    color: #004d40; /* Darker teal when hovering */
+}
+
+/* Template Grid Styling */
+.template-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+@media (max-width: 900px) {
+    .template-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* Template Card Styling */
+.template-card {
+    background: #ffffff;
+    border: 2px solid #00796b;
+    border-radius: 15px;
+    width: 30%;
+    text-align: center;
+    padding: 25px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    margin-bottom: 30px;
+    background-color: #e0f2f1; /* Soft cyan background to make each card pop */
+}
+
+.template-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Darker shadow for hover effect */
+}
+
+.template-card img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* Button Styling */
+.template-card .btn {
+    background-color: #00796b; /* Teal button to match the card border */
+    color: #fff;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.template-card .btn:hover {
+    background-color: #004d40; /* Darker teal for hover */
+    transform: translateY(-3px); /* Slight lift effect */
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 600px) {
+    .template-card {
+        width: 90%; /* Full width on mobile */
+        margin-bottom: 20px;
+    }
+
+    .template-card .btn {
+        width: 100%; /* Full width button on mobile */
+        padding: 15px;
+    }
+}
+
+/* Footer Section */
+footer {
+    margin-top: 50px;
+    font-size: 1rem;
+    color: #666;
+    text-align: center;
+    padding: 20px 0;
+    background-color: #004d40; /* Dark teal footer for strong contrast */
+    color: #fff;
+}

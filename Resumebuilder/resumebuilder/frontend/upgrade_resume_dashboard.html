@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade Resume</title>
+    <link rel="stylesheet" href="upgrade_resume_dashboard.css">
+</head>
+<body class="main">
+    <div class="container">
+        <h1>Upgrade Your Resume</h1>
+        <p>Select an option to proceed:</p>
+
+        <div class="options">
+            <button id="import-resume">Import Existing Resume</button>
+            <button id="edit-resume" disabled>Edit Uploaded Resume</button>
+        </div>
+
+        <div id="file-upload-section" class="hidden">
+            <form id="upload-form">
+                <input type="file" id="resume-file" accept=".docx, .pdf" required>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+
+        <div id="edit-resume-section" class="hidden">
+            <textarea id="resume-editor" placeholder="Edit your uploaded resume here..."></textarea>
+            <button id="save-resume">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="upgrade_resume_dashboard.js"></script>
+</body>
+</html>

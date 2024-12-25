@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="register.css">
+  <title>Register - Resume Builder</title>
+</head>      
+<body>
+  <header>
+    <h1>Register</h1>
+  </header>
+  <nav>
+    <a href="home.html">Home</a>
+    <a href="register.html" class="register-btn">Register</a> <!-- Added register-btn class -->
+    <a href="login.html">Login</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="container">
+    <form id="register-form">
+      <h2>Create an Account</h2>
+
+      <!-- First Name and Last Name -->
+      <div class="name-container">
+        <input type="text" name="firstName" placeholder="First Name" required>
+        <input type="text" name="lastName" placeholder="Last Name" required>
+      </div>
+
+      <!-- Email -->
+      <input type="email" name="email" placeholder="Email" required>
+
+      <!-- Password and Confirm Password -->
+      <div class="password-container">
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm Password" required>
+      </div>
+
+      <!-- Password Show Toggle -->
+      <div class="show-password-container">
+        <label>
+          <input type="checkbox" class="show-password-toggle" data-target="password"> Show Password
+        </label>
+        <label>
+          <input type="checkbox" class="show-password-toggle" data-target="confirm-password"> Show Confirm Password
+        </label>
+      </div>
+
+      <!-- OTP Section (hidden by default) -->
+      <div id="otp-section" style="display:none;">
+        <input type="text" id="otp" name="otp" placeholder="Enter OTP" required>
+        <button type="button" id="verify-otp">Verify OTP</button>
+      </div>
+
+      <button type="submit" id="register-button">Register</button>
+      
+      <!-- Login options -->
+      <div class="social-login">
+        <button type="button" id="google-login">Login with Google</button>
+        <button type="button" id="apple-login">Login with Apple</button>
+      </div>
+    </form>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Resume Builder. All rights reserved.</p>
+  </footer>
+  <script src="register.js"></script>
+</body>
+</html>

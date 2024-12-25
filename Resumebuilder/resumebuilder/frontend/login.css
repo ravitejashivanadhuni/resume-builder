@@ -1,0 +1,255 @@
+/* Base Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f7fa; /* Soft Off-White */
+    color: #4e5d6c; /* Soft Charcoal */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-x: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Header Styling */
+header {
+    width: 100%;
+    background: linear-gradient(135deg, #a8c0d8, #f0f4f8); /* Soft Blue to Light Grey */
+    padding: 30px 0;
+    text-align: center;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+header h1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #333; /* Dark Grey */
+    letter-spacing: 1.5px;
+    transition: color 0.3s ease;
+}
+
+header h1:hover {
+    color: #5d8d99; /* Soft Teal */
+}
+
+/* Navigation Bar Styling */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    background: rgba(168, 192, 216, 0.9); /* Semi-transparent Soft Blue */
+    padding: 15px 30px;
+    border-radius: 30px;
+    margin: 20px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease;
+}
+
+nav:hover {
+    background: rgba(168, 192, 216, 1); /* Fully opaque on hover */
+}
+
+nav a {
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 10px 20px;
+    color: #333; /* Dark Grey */
+    border: 1px solid transparent;
+    border-radius: 25px;
+    transition: all 0.3s ease-in-out;
+}
+
+nav a:hover {
+    background-color: #b9d8e7; /* Light Blue */
+    color: #333;
+    box-shadow: 0 4px 12px rgba(249, 251, 252, 0.3);
+    transform: translateY(-3px);
+}
+nav .login-btn {
+    background-color: #ffffff !important; /* White Background */
+    color: #0577ea !important; /* Light Blue Text */
+    border: 1px solid #a8c0d8 !important; /* Light Blue Border */
+}
+/* Form Container */
+.container {
+    text-align: center;
+    margin: 40px auto;
+    max-width: 700px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.95); /* Soft White */
+    border-radius: 15px;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+}
+
+.container h2 {
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: #5d8d99; /* Soft Teal */
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+.container form input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #e0e4e7; /* Light Grey */
+    border-radius: 8px;
+    background: rgba(240, 240, 240, 0.95); /* Light Grey Background */
+    color: #333;
+    font-size: 1rem;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.container form input:focus {
+    border-color: #5d8d99; /* Soft Teal */
+    outline: none;
+}
+
+/* Submit Button */
+.container form button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: #5d8d99; /* Soft Teal */
+    color: #ffffff;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.container form button:hover {
+    background: #4e7183; /* Muted Teal */
+}
+
+/* Password Section */
+.password-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.password-container input[type="password"] {
+    flex: 1;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #e0e4e7;
+    border-radius: 8px;
+    background: rgba(240, 240, 240, 0.95);
+}
+
+.show-password {
+    margin-left: 10px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.show-password input {
+    margin-right: 5px;
+}
+
+/* Forgot Password */
+.forgot-password {
+    text-align: right;
+    margin-bottom: 15px;
+}
+
+.forgot-password a {
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
+
+/* OTP Section */
+#otp-section {
+    margin-top: 20px;
+    display: none;
+}
+
+#otp-section input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    background: rgba(240, 240, 240, 0.95);
+    color: #333;
+    border: 1px solid #e0e4e7;
+}
+
+#otp-section button {
+    padding: 10px 16px;
+    background: #5d8d99; /* Soft Teal */
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+#otp-section button:hover {
+    background: #4e7183; /* Muted Teal */
+}
+
+/* Footer Styling */
+footer {
+    width: 100%;
+    background: linear-gradient(135deg, #a8c0d8, #f0f4f8); /* Soft Blue to Light Grey */
+    padding: 30px 0;
+    text-align: center;
+    box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-top: auto;
+}
+
+footer p {
+    font-size: 1rem;
+    color: #4e5d6c; /* Soft Charcoal */
+    letter-spacing: 1px;
+}
+
+/* Footer - Hover Effect */
+footer:hover {
+    background: linear-gradient(135deg, #f0f4f8, #a8c0d8); /* Inverse Gradient */
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+header, nav, .container, footer {
+    animation: fadeIn 0.8s ease-in-out;
+}

@@ -1,0 +1,159 @@
+/* Base Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom right, #e0f7fa, #80deea);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: #ffffff;
+    max-width: 800px;
+    width: 90%;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #00796b;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:disabled {
+    background: #ccc;
+    color: #777;
+    cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background: #00796b;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #004d40;
+}
+
+.btn-secondary {
+    background: #80cbc4;
+    color: #004d40;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #4db6ac;
+}
+
+/* File Upload Section */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+input[type="file"] {
+    border: 2px dashed #80cbc4;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    max-width: 400px;
+    cursor: pointer;
+    background: #e0f2f1;
+    color: #00796b;
+    font-weight: bold;
+}
+
+input[type="file"]:hover {
+    background: #b2dfdb;
+}
+
+/* Score Result Section */
+#score-result-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+#ats-score {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #00796b;
+}
+
+#improvement-suggestions h3 {
+    font-size: 1.2rem;
+    color: #00796b;
+    margin-bottom: 10px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    margin-top: 10px;
+}
+
+ul li {
+    background: #e0f2f1;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #b2dfdb;
+    border-radius: 8px;
+    color: #004d40;
+}
+
+/* Hidden class */
+.hidden {
+    display: none;
+}

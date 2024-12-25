@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="Dashboard.css">
+    <script>
+        // Check if the user is logged in before showing the dashboard
+        if (!localStorage.getItem('user')) {
+            alert('You are not logged in!');
+            window.location.href = 'login.html'; // Redirect to login if not logged in
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-container">
+            <h1>Dashboard</h1>
+            <a href="create_resume_dashboard.html" class="nav-item">Create Resume</a>
+            <a href="upgrade_resume_dashboard.html" class="nav-item">Upgrade Resume</a>
+            <a href="ats_score_dashboard.html" class="nav-item">ATS Score</a>
+            <a href="Job_Suggestions_dashboard.html" class="nav-item">Job Suggestions</a>
+            <a href="my_projects_dashboard.html" class="nav-item">My Projects</a>
+        </div>
+        <div class="resume-template">
+            <div class="resume-content">
+                <img class="resume-image" src="https://img.freepik.com/premium-photo/hr-manager-choosing-applicants-resume-flat-vector-illustration-recruiter-employer-search-staff-reading-candidates-cv-pc-employment-recruitment-service-boss-looking-personal-assistant_839035-183876.jpg?semt=ais_hybrid" alt="Animated Resume" width="800">
+            </div>
+        </div>
+    </div>
+
+    <script src="Dashboard.js"></script>
+</body>
+</html>
