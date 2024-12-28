@@ -5,21 +5,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const otpInput = document.getElementById('otp');
     const verifyOtpButton = document.getElementById('verify-otp');
     const googleLoginButton = document.getElementById('google-login');
-    const appleLoginButton = document.getElementById('apple-login');
     const apiBaseUrl = 'http://localhost:5000/api/auth'; // Adjust this as per your backend URL.
 
+    // Message display element
+    const messageDisplay = document.getElementById('message-display');
+    const emailInput = document.getElementById('email');
+    const emailExistenceMessage = document.getElementById('email-existence-message');
+
     // Handle the show password toggle
-    const showPasswordToggles = document.querySelectorAll('.show-password-toggle');
-    showPasswordToggles.forEach(toggle => {
-        toggle.addEventListener('change', (event) => {
-            const targetId = event.target.dataset.target;
-            const targetInput = document.getElementById(targetId);
-            if (event.target.checked) {
-                targetInput.type = 'text'; // Show the password
-            } else {
-                targetInput.type = 'password'; // Hide the password
-            }
-        });
+    const showPasswordToggle = document.getElementById('show-password-toggle');
+    showPasswordToggle.addEventListener('change', (event) => {
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+
+        if (event.target.checked) {
+            passwordInput.type = 'text'; // Show the password
+            confirmPasswordInput.type = 'text'; // Show confirm password
+        } else {
+            passwordInput.type = 'password'; // Hide the password
+            confirmPasswordInput.type = 'password'; // Hide confirm password
+        }
     });
 
     // Handle Register Button Click
@@ -35,7 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Simple password validation
         if (password !== confirmPassword) {
-            alert('Passwords do not match!');
+            messageDisplay.textContent = 'Passwords do not match!';
+            messageDisplay.style.color = 'red';
+            return;
+        }
+
+        // Check email validity
+        if (!validateEmail(email)) {
+            messageDisplay.textContent = 'Please enter a valid email address.';
+            messageDisplay.style.color = 'red';
             return;
         }
 
@@ -44,9 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
             await sendOtpToEmail(email, firstName, lastName);
             // Show OTP input field
             otpSection.style.display = 'block';
+            messageDisplay.textContent = 'OTP sent to your email!';
+            messageDisplay.style.color = 'green';
         } catch (error) {
             console.error('Error sending OTP:', error);
-            alert('Error sending OTP. Please try again.');
+            messageDisplay.textContent = 'Error sending OTP. Please try again.';
+            messageDisplay.style.color = 'red';
         }
     });
 
@@ -61,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) {
             throw new Error(data.message || 'Failed to send OTP');
         }
-        alert('OTP sent to your email!');
     }
 
     // Handle OTP Verification
@@ -78,41 +93,169 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.success) {
-                alert('OTP verified successfully!');
+                messageDisplay.textContent = 'OTP verified successfully!';
+                messageDisplay.style.color = 'green';
                 createAccount(); // Proceed to account creation
             } else {
-                alert(data.message || 'Invalid OTP. Please try again.');
+                messageDisplay.textContent = data.message || 'Invalid OTP. Please try again.';
+                messageDisplay.style.color = 'red';
             }
         } catch (error) {
             console.error('OTP verification failed:', error);
-            alert('Error verifying OTP. Please try again.');
+            messageDisplay.textContent = 'Error verifying OTP. Please try again.';
+            messageDisplay.style.color = 'red';
         }
     });
 
     // Simulate account creation (replace with actual backend account creation logic)
-    function createAccount() {
-        alert('Account created successfully!');
-        registerForm.reset();
-        otpSection.style.display = 'none'; // Hide OTP section after successful registration
+    async function createAccount() {
+        const firstName = registerForm['firstName'].value;
+        const lastName = registerForm['lastName'].value;
+        const email = registerForm['email'].value;
+        const password = registerForm['password'].value;
+
+        try {
+            const response = await fetch(`${apiBaseUrl}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    firstName, // Send first name separately
+                    lastName,  // Send last name separately
+                    email,
+                    password
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                messageDisplay.textContent = 'Account created successfully!';
+                messageDisplay.style.color = 'green';
+                registerForm.reset();
+                otpSection.style.display = 'none'; // Hide OTP section after successful registration
+                // Redirect to login.html
+                window.location.href = 'login.html';
+            } else {
+                messageDisplay.textContent = data.message || 'Error creating account';
+                messageDisplay.style.color = 'red';
+            }
+        } catch (error) {
+            console.error('Account creation failed:', error);
+            messageDisplay.textContent = 'Error creating account. Please try again.';
+            messageDisplay.style.color = 'red';
+        }
     }
 
     // Google Login (Simulated)
     googleLoginButton.addEventListener('click', () => {
-        alert('Logging in with Google...');
+        messageDisplay.textContent = 'Logging in with Google...';
         fakeGoogleLogin();
     });
 
     function fakeGoogleLogin() {
-        alert('Google login successful!');
+        messageDisplay.textContent = 'Google login successful!';
+        messageDisplay.style.color = 'green';
     }
 
-    // Apple Login (Simulated)
-    appleLoginButton.addEventListener('click', () => {
-        alert('Logging in with Apple...');
-        fakeAppleLogin();
-    });
+   // Password Strength Indicator Logic
+const passwordInput = document.getElementById('password');
+const passwordStrengthText = document.getElementById('password-strength');
+const passwordSuggestion = document.getElementById('password-suggestion');
 
-    function fakeAppleLogin() {
-        alert('Apple login successful!');
+passwordInput.addEventListener('input', () => {
+    const password = passwordInput.value;
+    const suggestions = [];
+    const strength = evaluatePasswordStrength(password, suggestions);
+
+    // Update the strength text and its class
+    passwordStrengthText.textContent = `${strength.charAt(0).toUpperCase() + strength.slice(1)} Password`;
+    passwordStrengthText.className = `password-strength ${strength}`;
+
+    // Show suggestions if there are any
+    if (suggestions.length > 0) {
+        passwordSuggestion.style.display = 'block';
+        passwordSuggestion.textContent = `Suggestions: ${suggestions.join(', ')}`;
+    } else {
+        passwordSuggestion.style.display = 'none';
+    }
+});
+
+function evaluatePasswordStrength(password, suggestions) {
+    if (password.length < 3) {
+        // Avoid premature feedback
+        passwordStrengthText.textContent = '';
+        passwordSuggestion.style.display = 'none';
+        return 'too short';
+    }
+
+    const lengthCriteria = password.length >= 8;
+    const upperCase = /[A-Z]/.test(password);
+    const lowerCase = /[a-z]/.test(password);
+    const number = /\d/.test(password);
+    const specialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    // Generate suggestions
+    if (!upperCase) suggestions.push('Add at least one uppercase letter');
+    if (!lowerCase) suggestions.push('Add at least one lowercase letter');
+    if (!number) suggestions.push('Include at least one number');
+    if (!specialChar) suggestions.push('Include at least one special character');
+    if (password.length < 8) suggestions.push('Make the password at least 8 characters long');
+
+    // Determine strength
+    if (lengthCriteria && upperCase && lowerCase && number && specialChar) {
+        return 'strong';
+    }
+    if (lengthCriteria && ((upperCase && lowerCase) || number || specialChar)) {
+        return 'medium';
+    }
+    return 'weak';
+}
+
+
+    // Check if email already exists
+    let debounceTimer; // To hold the debounce timer
+
+    emailInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer); // Clear previous timer
+        const email = emailInput.value.trim();
+    
+        // Debounce: Wait 500ms before making the API call
+        debounceTimer = setTimeout(async () => {
+            if (email) {
+                try {
+                    const response = await fetch('/api/auth/check-user', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email }),
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status}`);
+                    }
+    
+                    const data = await response.json();
+                    if (data.exists) {
+                        emailExistenceMessage.textContent = 'User with this email already exists.';
+                        emailExistenceMessage.style.color = 'red'; // Optional styling
+                    } else {
+                        emailExistenceMessage.textContent = '';
+                    }
+                } catch (error) {
+                    console.error('Error checking email existence:', error);
+                    emailExistenceMessage.textContent = 'Error checking email. Please try again.';
+                    emailExistenceMessage.style.color = 'red'; // Optional styling
+                }
+            } else {
+                // Clear message if input is empty
+                emailExistenceMessage.textContent = '';
+            }
+        }, 500); // Wait 500ms before making the API call
+    });
+    
+    
+
+    // Simple Email Validation
+    function validateEmail(email) {
+        const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        return re.test(email);
     }
 });
