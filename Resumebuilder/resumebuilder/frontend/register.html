@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="register.css">
   <title>Register - Resume Builder</title>
-</head>      
+</head>
 <body>
   <header>
     <h1>Register</h1>
   </header>
   <nav>
     <a href="home.html">Home</a>
-    <a href="register.html" class="register-btn">Register</a> <!-- Added register-btn class -->
+    <a href="register.html" class="register-btn">Register</a>
     <a href="login.html">Login</a>
     <a href="about.html">About Us</a>
     <a href="contact.html">Contact</a>
@@ -23,48 +23,55 @@
 
       <!-- First Name and Last Name -->
       <div class="name-container">
-        <input type="text" name="firstName" placeholder="First Name" required>
-        <input type="text" name="lastName" placeholder="Last Name" required>
+        <input type="text" name="firstName" id="first-name" placeholder="First Name" required autocomplete="given-name">
+        <input type="text" name="lastName" id="last-name" placeholder="Last Name" autocomplete="family-name">
       </div>
 
       <!-- Email -->
-      <input type="email" name="email" placeholder="Email" required>
+      <input type="email" name="email" id="email" placeholder="Email" required autocomplete="email">
+      <p id="email-existence-message" style="color: red; font-size: 0.9rem;"></p>
 
       <!-- Password and Confirm Password -->
       <div class="password-container">
-        <input type="password" id="password" name="password" placeholder="Password" required>
-        <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm Password" required>
+        <input type="password" id="password" name="password" placeholder="Password" required autocomplete="new-password">
+        <p id="password-strength" class="password-strength"></p>
+        <p id="password-suggestion" class="password-suggestion" style="display: none;">
+          Tip: Use a mix of uppercase letters, lowercase letters, numbers, and special characters (e.g., Abc123!@#).
+        </p>
       </div>
+      <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm Password" required autocomplete="new-password">
 
       <!-- Password Show Toggle -->
       <div class="show-password-container">
         <label>
-          <input type="checkbox" class="show-password-toggle" data-target="password"> Show Password
-        </label>
-        <label>
-          <input type="checkbox" class="show-password-toggle" data-target="confirm-password"> Show Confirm Password
+          <input type="checkbox" id="show-password-toggle" data-target="password"> Show Password
         </label>
       </div>
 
       <!-- OTP Section (hidden by default) -->
       <div id="otp-section" style="display:none;">
-        <input type="text" id="otp" name="otp" placeholder="Enter OTP" required>
+        <input type="text" id="otp" name="otp" placeholder="Enter OTP" required autocomplete="one-time-code" style="display: block;">
         <button type="button" id="verify-otp">Verify OTP</button>
       </div>
 
+      <!-- Register Button -->
       <button type="submit" id="register-button">Register</button>
-      
-      <!-- Login options -->
+
+      <!-- Google Login Button -->
       <div class="social-login">
-        <button type="button" id="google-login">Login with Google</button>
-        <button type="button" id="apple-login">Login with Apple</button>
+        <button type="button" id="google-login">Sign up with Google</button>
       </div>
+
+      <!-- Message Display -->
+      <p id="message-display"></p>
     </form>
   </div>
 
   <footer>
     <p>&copy; 2024 Resume Builder. All rights reserved.</p>
   </footer>
-  <script src="register.js"></script>
+
+  <!-- JavaScript for handling logic -->
+  <script type="module" src="register.js"></script>
 </body>
 </html>
