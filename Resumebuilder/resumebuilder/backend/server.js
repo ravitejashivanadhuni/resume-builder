@@ -3,20 +3,26 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 const nodemailer = require('nodemailer');
-const bcrypt = require('bcrypt'); // Missing bcrypt module was not included
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const authRoutes = require('./routes/authroutes');
-const app = express();
-dotenv.config();
 
+dotenv.config();
+const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../frontend')));
 
+// Use auth routes
+app.use('/api/auth', authRoutes);
+
 // Temporary in-memory OTP store (use Redis for production)
 const otpStore = new Map(); // Maps email to OTP and timestamp
 
-// Create a transport for sending emails
+// Email transporter
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -32,7 +38,6 @@ app.post('/api/auth/send-otp', async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000); // Generate 6-digit OTP
   const expirationTime = Date.now() + 10 * 60 * 1000; // Valid for 10 minutes
 
-  // Store OTP in memory (or Redis for production)
   otpStore.set(email, { otp, expirationTime });
 
   const mailOptions = {
@@ -51,7 +56,38 @@ app.post('/api/auth/send-otp', async (req, res) => {
   }
 });
 
-// Route to verify OTP
+// Registration route
+app.post('/api/auth/register', async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+
+  if (!firstName || !lastName || !email || !password) {
+    return res.status(400).json({ success: false, message: 'All fields are required!' });
+  }
+
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'Email already exists!' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+    res.status(201).json({ success: true, message: 'User registered successfully!' });
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+});
+
+// Verify OTP
 app.post('/api/auth/verify-otp', (req, res) => {
   const { email, otp } = req.body;
 
@@ -62,7 +98,7 @@ app.post('/api/auth/verify-otp', (req, res) => {
   const { otp: storedOtp, expirationTime } = otpStore.get(email);
 
   if (Date.now() > expirationTime) {
-    otpStore.delete(email); // Remove expired OTP
+    otpStore.delete(email);
     return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new one.' });
   }
 
@@ -70,68 +106,141 @@ app.post('/api/auth/verify-otp', (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid OTP. Please try again.' });
   }
 
-  otpStore.delete(email); // OTP verified, remove it
+  otpStore.delete(email);
   res.status(200).json({ success: true, message: 'OTP verified successfully!' });
 });
 
-// Login Route
+// Login route
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const user = await User.findOne({ email });
-
     if (!user) {
-      return res.status(400).json({ success: false, message: 'Invalid email or password!' });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
+
+    // Log the entered and stored password for debugging
+    console.log('Entered password:', password);
+    console.log('Stored password hash:', user.password);
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Is password valid:', isPasswordValid);
 
     if (!isPasswordValid) {
-      return res.status(400).json({ success: false, message: 'Invalid email or password!' });
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    res.status(200).json({ success: true, message: 'Login successful!' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      },
+    });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ success: false, message: 'Internal server error. Please try again later.' });
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
   }
 });
 
-// Forgot Password Route
+
+// Forgot password route
 app.post('/api/auth/forgot-password', async (req, res) => {
   const { email } = req.body;
 
   try {
     const user = await User.findOne({ email });
-
     if (!user) {
-      return res.status(400).json({ success: false, message: 'No account found with this email.' });
+      return res.status(404).json({ success: false, message: 'User not found.' });
     }
 
-    // Generate a reset token (you can use JWT or random strings)
-    const resetToken = Math.random().toString(36).substr(2);
-    user.resetToken = resetToken;
-    user.resetTokenExpiry = Date.now() + 3600000; // 1 hour expiry
-    await user.save();
+    // Generate a JWT reset token
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '15m' });
 
-    // Send reset email
+    // Generate the reset link
     const resetLink = `${req.protocol}://${req.get('host')}/reset-password.html?token=${resetToken}`;
 
+    // Send email with the reset link
     await transporter.sendMail({
       to: email,
       subject: 'Password Reset Request',
-      text: `Click the link to reset your password: ${resetLink}`,
+      text: `You requested a password reset. Click the link to reset your password: ${resetLink}`,
     });
 
-    res.status(200).json({ success: true, message: 'Password reset link sent to your email!' });
+    res.status(200).json({ success: true, message: 'Password reset link sent to your email.' });
   } catch (error) {
-    console.error('Forgot Password Error:', error);
+    console.error('Error during forgot password:', error);
     res.status(500).json({ success: false, message: 'An error occurred. Please try again later.' });
   }
 });
 
-// Catch-all route
+// Serve reset-password.html
+app.get('/reset-password.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/reset-password.html'));
+});
+
+// Reset Password Route
+app.post('/api/auth/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) {
+    return res.status(400).json({ success: false, message: 'Token and new password are required.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    // Directly assign the new password, which will trigger the hashing in the `pre('save')` middleware
+    user.password = password;
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Password reset successful. You can now log in with your new password.' });
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(400).json({ success: false, message: 'Token has expired. Please request a new password reset.' });
+    }
+
+    res.status(500).json({ success: false, message: 'Server error. Please try again later.' });
+  }
+});
+
+//check whether the user with an entered email exist or not
+app.post('/api/auth/check-user', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+      const user = await User.findOne({ email });
+      if (user) {
+          return res.status(200).json({ exists: true, message: 'User with this email already exists.' });
+      }
+      res.status(200).json({ exists: false });
+  } catch (error) {
+      console.error('Error checking user:', error);
+      res.status(500).json({ message: 'Error checking email. Please try again later.' });
+  }
+});
+
+
+// Serve Dashboard.html explicitly
+app.get('/Dashboard.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/Dashboard.html'), (err) => {
+    if (err) {
+      res.status(500).send('Error loading Dashboard page.');
+    }
+  });
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/home.html'));
 });
@@ -150,3 +259,4 @@ mongoose
   .catch((error) => {
     console.error('MongoDB connection error:', error);
   });
+
