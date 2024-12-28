@@ -103,6 +103,32 @@ nav .register-btn:hover {
     color: #5d8d99; /* Soft Teal */
     margin-bottom: 20px;
 }
+/* Password Strength Indicator */
+.password-strength {
+    margin-top: 5px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-align: left;
+}
+
+.password-strength.weak {
+    color: #e63946; /* Red for weak passwords */
+}
+
+.password-strength.medium {
+    color: #f4a261; /* Orange for medium passwords */
+}
+
+.password-strength.strong {
+    color: #2a9d8f; /* Green for strong passwords */
+}
+
+.password-suggestion {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #4e5d6c; /* Soft Charcoal */
+    margin-top: 8px;
+}
 
 /* Input Fields */
 .container form input {
