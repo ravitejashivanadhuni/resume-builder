@@ -65,7 +65,6 @@ function handleRegister(data) {
 }
 
 function handleLogin(data) {
-  const messageDisplay = document.getElementById('message-display');
   fetch('/api/auth/login', {
     method: 'POST',
     headers: {
@@ -75,6 +74,7 @@ function handleLogin(data) {
   })
     .then((response) => response.json())
     .then((result) => {
+      const messageDisplay = document.getElementById('messageDisplay');
       if (result.success) {
         messageDisplay.textContent = 'Login successful!';
         messageDisplay.style.color = 'green';
@@ -88,14 +88,82 @@ function handleLogin(data) {
     })
     .catch((error) => {
       console.error('Error during login:', error);
-      messageDisplay.textContent = 'An error occurred. Please try again later.';
-      messageDisplay.style.color = 'red';
-    });
+      const messageDisplay = document.getElementById('messageDisplay');
+      if (messageDisplay) {
+        messageDisplay.textContent = 'An error occurred. Please try again later.';
+        messageDisplay.style.color = 'red';
+      } else {
+        console.error('Message display element not found!');
+      }
+    })
 }
 
-function handleContact(data) {
-  alert('Thank you for reaching out! We will get back to you soon.');
+// Handle Google Sign-In
+window.onload = () => {
+  google.accounts.id.initialize({
+      client_id: "335892097508-qi6munbgs0n52h2gf4fbluf72r242lkt.apps.googleusercontent.com", // Replace with your Google Client ID
+      callback: handleGoogleLogin,
+  });
+
+  // Render Google Sign-In button
+  google.accounts.id.renderButton(
+      document.querySelector('.g_id_signin'),
+      { theme: "outline", size: "large" }
+  );
+};
+
+function handleGoogleLogin(response) {
+  const idToken = response.credential; // Ensure the credential (idToken) is extracted from response
+  console.log('Google ID Token:', idToken); // Log the token for debugging
+
+  if (!idToken) {
+      console.error("Google ID Token is missing");
+      return;
+  }
+
+  // Send the token to the backend for login
+  fetch('/api/auth/google-login', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ idToken }),
+  })
+      .then((res) => res.json())
+      .then((result) => {
+          const messageDisplay = document.getElementById('messageDisplay');
+          if (result.success) {
+              messageDisplay.textContent = 'Login successful!';
+              messageDisplay.style.color = 'green';
+              localStorage.setItem('user', JSON.stringify(result.user));
+              setTimeout(() => window.location.href = '/Dashboard.html', 2000); // Redirect to dashboard
+          } else {
+              messageDisplay.textContent = result.message || 'Login failed!';
+              messageDisplay.style.color = 'red';
+          }
+      })
+      .catch((error) => {
+          console.error('Error during Google login:', error);
+          const messageDisplay = document.getElementById('messageDisplay');
+          messageDisplay.textContent = 'An error occurred. Please try again later.';
+          messageDisplay.style.color = 'red';
+      });
 }
+
+
+// JWT Token Generation (Helper Function)
+function generateToken(user) {
+  return jwt.sign(
+    { userId: user._id, email: user.email },
+    'your_secret_key', // Use a strong secret key for JWT generation
+    { expiresIn: '1h' }
+  );
+}
+
+module.exports = {
+  googleLogin,
+};
+
 
 function highlightActiveNav() {
   const navLinks = document.querySelectorAll('nav a');
