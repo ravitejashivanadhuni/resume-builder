@@ -6,23 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const verifyOtpButton = document.getElementById('verify-otp');
     const googleLoginButton = document.getElementById('google-login');
     const apiBaseUrl = 'http://localhost:5000/api/auth'; // Adjust this as per your backend URL.
-
-    // Message display element
     const messageDisplay = document.getElementById('message-display');
     const emailInput = document.getElementById('email');
     const emailExistenceMessage = document.getElementById('email-existence-message');
+    const showPasswordToggle = document.getElementById('show-password-toggle');
+    const passwordInput = document.getElementById('password');
+    const passwordStrengthText = document.getElementById('password-strength');
+    const passwordSuggestion = document.getElementById('password-suggestion');
+    //const githubLoginButton = document.querySelector("github-login-button");
 
     // Handle the show password toggle
-    const showPasswordToggle = document.getElementById('show-password-toggle');
     showPasswordToggle.addEventListener('change', (event) => {
-        const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('confirm-password');
-
         if (event.target.checked) {
-            passwordInput.type = 'text'; // Show the password
+            passwordInput.type = 'text'; // Show password
             confirmPasswordInput.type = 'text'; // Show confirm password
         } else {
-            passwordInput.type = 'password'; // Hide the password
+            passwordInput.type = 'password'; // Hide password
             confirmPasswordInput.type = 'password'; // Hide confirm password
         }
     });
@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Send OTP to Email
         try {
             await sendOtpToEmail(email, firstName, lastName);
-            // Show OTP input field
             otpSection.style.display = 'block';
             messageDisplay.textContent = 'OTP sent to your email!';
             messageDisplay.style.color = 'green';
@@ -132,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 messageDisplay.style.color = 'green';
                 registerForm.reset();
                 otpSection.style.display = 'none'; // Hide OTP section after successful registration
-                // Redirect to login.html
                 window.location.href = 'login.html';
             } else {
                 messageDisplay.textContent = data.message || 'Error creating account';
@@ -145,80 +143,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Google Login (Simulated)
-    googleLoginButton.addEventListener('click', () => {
-        messageDisplay.textContent = 'Logging in with Google...';
-        fakeGoogleLogin();
+
+    // Password Strength Indicator Logic
+    passwordInput.addEventListener('input', () => {
+        const password = passwordInput.value;
+        const suggestions = [];
+        const strength = evaluatePasswordStrength(password, suggestions);
+
+        passwordStrengthText.textContent = `${strength.charAt(0).toUpperCase() + strength.slice(1)} Password`;
+        passwordStrengthText.className = `password-strength ${strength}`;
+
+        if (suggestions.length > 0) {
+            passwordSuggestion.style.display = 'block';
+            passwordSuggestion.textContent = `Suggestions: ${suggestions.join(', ')}`;
+        } else {
+            passwordSuggestion.style.display = 'none';
+        }
     });
 
-    function fakeGoogleLogin() {
-        messageDisplay.textContent = 'Google login successful!';
-        messageDisplay.style.color = 'green';
+    function evaluatePasswordStrength(password, suggestions) {
+        if (password.length < 3) {
+            passwordStrengthText.textContent = '';
+            passwordSuggestion.style.display = 'none';
+            return 'too short';
+        }
+
+        const lengthCriteria = password.length >= 8;
+        const upperCase = /[A-Z]/.test(password);
+        const lowerCase = /[a-z]/.test(password);
+        const number = /\d/.test(password);
+        const specialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        if (!upperCase) suggestions.push('Add at least one uppercase letter');
+        if (!lowerCase) suggestions.push('Add at least one lowercase letter');
+        if (!number) suggestions.push('Include at least one number');
+        if (!specialChar) suggestions.push('Include at least one special character');
+        if (password.length < 8) suggestions.push('Make the password at least 8 characters long');
+
+        if (lengthCriteria && upperCase && lowerCase && number && specialChar) {
+            return 'strong';
+        }
+        if (lengthCriteria && ((upperCase && lowerCase) || number || specialChar)) {
+            return 'medium';
+        }
+        return 'weak';
     }
-
-   // Password Strength Indicator Logic
-const passwordInput = document.getElementById('password');
-const passwordStrengthText = document.getElementById('password-strength');
-const passwordSuggestion = document.getElementById('password-suggestion');
-
-passwordInput.addEventListener('input', () => {
-    const password = passwordInput.value;
-    const suggestions = [];
-    const strength = evaluatePasswordStrength(password, suggestions);
-
-    // Update the strength text and its class
-    passwordStrengthText.textContent = `${strength.charAt(0).toUpperCase() + strength.slice(1)} Password`;
-    passwordStrengthText.className = `password-strength ${strength}`;
-
-    // Show suggestions if there are any
-    if (suggestions.length > 0) {
-        passwordSuggestion.style.display = 'block';
-        passwordSuggestion.textContent = `Suggestions: ${suggestions.join(', ')}`;
-    } else {
-        passwordSuggestion.style.display = 'none';
-    }
-});
-
-function evaluatePasswordStrength(password, suggestions) {
-    if (password.length < 3) {
-        // Avoid premature feedback
-        passwordStrengthText.textContent = '';
-        passwordSuggestion.style.display = 'none';
-        return 'too short';
-    }
-
-    const lengthCriteria = password.length >= 8;
-    const upperCase = /[A-Z]/.test(password);
-    const lowerCase = /[a-z]/.test(password);
-    const number = /\d/.test(password);
-    const specialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-    // Generate suggestions
-    if (!upperCase) suggestions.push('Add at least one uppercase letter');
-    if (!lowerCase) suggestions.push('Add at least one lowercase letter');
-    if (!number) suggestions.push('Include at least one number');
-    if (!specialChar) suggestions.push('Include at least one special character');
-    if (password.length < 8) suggestions.push('Make the password at least 8 characters long');
-
-    // Determine strength
-    if (lengthCriteria && upperCase && lowerCase && number && specialChar) {
-        return 'strong';
-    }
-    if (lengthCriteria && ((upperCase && lowerCase) || number || specialChar)) {
-        return 'medium';
-    }
-    return 'weak';
-}
-
 
     // Check if email already exists
-    let debounceTimer; // To hold the debounce timer
-
+    let debounceTimer;
     emailInput.addEventListener('input', () => {
-        clearTimeout(debounceTimer); // Clear previous timer
+        clearTimeout(debounceTimer);
         const email = emailInput.value.trim();
-    
-        // Debounce: Wait 500ms before making the API call
+
         debounceTimer = setTimeout(async () => {
             if (email) {
                 try {
@@ -227,31 +203,95 @@ function evaluatePasswordStrength(password, suggestions) {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email }),
                     });
-    
+
                     if (!response.ok) {
                         throw new Error(`Server error: ${response.status}`);
                     }
-    
+
                     const data = await response.json();
                     if (data.exists) {
                         emailExistenceMessage.textContent = 'User with this email already exists.';
-                        emailExistenceMessage.style.color = 'red'; // Optional styling
+                        emailExistenceMessage.style.color = 'red';
                     } else {
                         emailExistenceMessage.textContent = '';
                     }
                 } catch (error) {
                     console.error('Error checking email existence:', error);
                     emailExistenceMessage.textContent = 'Error checking email. Please try again.';
-                    emailExistenceMessage.style.color = 'red'; // Optional styling
+                    emailExistenceMessage.style.color = 'red';
                 }
             } else {
-                // Clear message if input is empty
                 emailExistenceMessage.textContent = '';
             }
-        }, 500); // Wait 500ms before making the API call
+        }, 500);
     });
-    
-    
+
+    // Handle Google Sign-In for Registration
+window.onload = () => {
+    google.accounts.id.initialize({
+      client_id: "335892097508-qi6munbgs0n52h2gf4fbluf72r242lkt.apps.googleusercontent.com", // Your Google Client ID
+      callback: handleGoogleSignUp,
+    });
+  
+    // Render Google Sign-In button
+    google.accounts.id.renderButton(
+      document.querySelector('.g_id_signin'),
+      { theme: "outline", size: "large" ,text: "signup_with" }
+    );
+  };
+  
+  function handleGoogleSignUp(response) {
+    const idToken = response.credential; // Ensure the credential (idToken) is extracted from response
+    console.log('Google ID Token:', idToken); // Log the token for debugging
+  
+    // Check if the idToken exists before sending it to the backend
+    if (!idToken) {
+      console.error("Google ID Token is missing");
+      return;
+    }
+  
+    // Send the token to the backend for registration or login
+    fetch('/api/auth/google-signup', { // Use a specific endpoint for Google Sign-Up
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ idToken }) // Send idToken to backend
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        const messageDisplay = document.getElementById('message-display');
+        if (result.success) {
+          // User is successfully logged in after Google Sign-Up
+          messageDisplay.textContent = 'Registration and Login successful!';
+          messageDisplay.style.color = 'green';
+          localStorage.setItem('token', result.token);
+          localStorage.setItem('user', JSON.stringify(result.user));
+          setTimeout(() => window.location.href = '/Dashboard.html', 2000); // Redirect to dashboard
+        } else {
+          // Handle errors from the backend
+          messageDisplay.textContent = result.message || 'Google Sign-Up failed!';
+          messageDisplay.style.color = 'red';
+        }
+      })
+      .catch((error) => {
+        console.error('Error during Google sign-up:', error);
+        const messageDisplay = document.getElementById('message-display');
+        if (messageDisplay) {
+          messageDisplay.textContent = 'An error occurred. Please try again later.';
+          messageDisplay.style.color = 'red';
+        } else {
+          console.error('Message display element not found!');
+        }
+      });
+  }
+
+ // Handle GitHub Login button click
+ document.getElementById('github-signup-btn').addEventListener('click', () => {
+    window.location.href ='http://localhost:5000/api/auth/github'; // Backend endpoint for GitHub authentication
+  });
+  
+
 
     // Simple Email Validation
     function validateEmail(email) {
