@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="register.css">
-  <title>Register - Resume Builder</title>
+  <title>Sign Up - Resume Builder</title>
+  <!-- Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <header>
-    <h1>Register</h1>
+    <h1>Sign Up</h1>
   </header>
   <nav>
     <a href="home.html">Home</a>
@@ -21,17 +23,14 @@
     <form id="register-form">
       <h2>Create an Account</h2>
 
-      <!-- First Name and Last Name -->
       <div class="name-container">
         <input type="text" name="firstName" id="first-name" placeholder="First Name" required autocomplete="given-name">
         <input type="text" name="lastName" id="last-name" placeholder="Last Name" autocomplete="family-name">
       </div>
 
-      <!-- Email -->
       <input type="email" name="email" id="email" placeholder="Email" required autocomplete="email">
       <p id="email-existence-message" style="color: red; font-size: 0.9rem;"></p>
 
-      <!-- Password and Confirm Password -->
       <div class="password-container">
         <input type="password" id="password" name="password" placeholder="Password" required autocomplete="new-password">
         <p id="password-strength" class="password-strength"></p>
@@ -41,28 +40,48 @@
       </div>
       <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm Password" required autocomplete="new-password">
 
-      <!-- Password Show Toggle -->
       <div class="show-password-container">
         <label>
           <input type="checkbox" id="show-password-toggle" data-target="password"> Show Password
         </label>
       </div>
 
-      <!-- OTP Section (hidden by default) -->
       <div id="otp-section" style="display:none;">
         <input type="text" id="otp" name="otp" placeholder="Enter OTP" required autocomplete="one-time-code" style="display: block;">
         <button type="button" id="verify-otp">Verify OTP</button>
       </div>
 
-      <!-- Register Button -->
       <button type="submit" id="register-button">Register</button>
 
-      <!-- Google Login Button -->
+      <!-- Google Sign-In Button -->
       <div class="social-login">
-        <button type="button" id="google-login">Sign up with Google</button>
+        <div id="g_id_onload"
+          data-client_id="335892097508-qi6munbgs0n52h2gf4fbluf72r242lkt.apps.googleusercontent.com"
+          data-login_uri="http://localhost:5000/api/auth/google-login"
+          data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+          data-type="standard"
+          data-size="large"
+          data-theme="outline"
+          data-text="signup_with"
+          data-shape="rectangular"
+          data-logo_alignment="left">
+        </div>
       </div>
 
-      <!-- Message Display -->
+      <!-- GitHub Sign-Up Button -->
+<div class="social-login">
+  <a href="http://localhost:5000/api/auth/github" class="github-btn">
+    <button id="github-signup-btn" class="github-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/120px-Octicons-mark-github.svg.png" alt="GitHub Logo" class="github-logo">
+      Sign Up with GitHub
+    </button>
+  </a>
+</div>
+
+
+
       <p id="message-display"></p>
     </form>
   </div>
@@ -71,7 +90,6 @@
     <p>&copy; 2024 Resume Builder. All rights reserved.</p>
   </footer>
 
-  <!-- JavaScript for handling logic -->
   <script type="module" src="register.js"></script>
 </body>
 </html>
