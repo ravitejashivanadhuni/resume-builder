@@ -80,6 +80,52 @@ nav .register-btn:hover {
     background-color: #a8c0d8 !important; /* Light Blue Background on Hover */
     color: #ffffff !important; /* White Text on Hover */
 }
+/* GitHub Sign-Up Button */
+.github-btn {
+    display: inline-block;
+    width: 100%;
+    margin-top: 20px; /* Space between other buttons */
+    text-decoration: none; /* Remove underline from link */
+}
+
+.github-btn button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+    color: #ffffff; /* White Text */
+    background-color: #24292f; /* GitHub Black */
+    border: none; /* Remove border */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* GitHub Logo */
+.github-btn button .github-logo {
+    width: 20px; /* Adjust logo size */
+    height: auto;
+    margin-right: 10px; /* Space between logo and text */
+}
+
+/* Hover Effect for GitHub Button */
+.github-btn button:hover {
+    background-color: #3e4449; /* Slightly lighter black for hover effect */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .github-btn button {
+        font-size: 0.9rem;
+        padding: 10px 16px;
+    }
+    .github-btn button .github-logo {
+        width: 18px;
+    }
+}
+
 
 /* Form Container */
 .container {
@@ -103,6 +149,12 @@ nav .register-btn:hover {
     color: #5d8d99; /* Soft Teal */
     margin-bottom: 20px;
 }
+
+/* Add spacing between Register and Sign Up with Google button */
+.social-login {
+    margin-top: 20px; /* Adjust as needed */
+}
+
 /* Password Strength Indicator */
 .password-strength {
     margin-top: 5px;
