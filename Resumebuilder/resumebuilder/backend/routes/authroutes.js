@@ -1,12 +1,27 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const GoogleUser = require('../models/GoogleUser');  // Import the Google User model
 const User = require('../models/User'); // Ensure this path is correct
-
+const { OAuth2Client } = require('google-auth-library');
+//const GOOGLE_CLIENT_ID = '335892097508-qi6munbgs0n52h2gf4fbluf72r242lkt.apps.googleusercontent.com';
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); // Ensure this matches the client ID in your Google console
 const router = express.Router();
+const passport = require('passport');
+const GitHubStrategy = require('passport-github').Strategy;
+const GithubUser = require('../models/GithubUsers'); // The model for GitHub users
+require('dotenv').config(); 
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
+
+// Middleware to protect routes
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+      return next();
+  }
+  res.redirect('/login'); // Redirect to login if not authenticated
+}
 
 // Registration Route
 router.post('/register', async (req, res) => {
@@ -92,6 +107,142 @@ router.post('/login', async (req, res) => {
   }
 });
 
+
+
+
+// POST route to verify Google login
+router.post('/google-login', async (req, res) => {
+  const { idToken } = req.body;
+
+  console.log('Received idToken:', idToken); // Debugging step
+
+  if (!idToken) {
+      return res.status(400).send({ success: false, message: 'Token is required' });
+  }
+
+  try {
+      // Verifying the token with Google's API
+      const ticket = await client.verifyIdToken({
+          idToken: idToken, // Token received from frontend
+          audience: process.env.GOOGLE_CLIENT_ID, // Ensure the audience matches your client ID
+      });
+
+      const payload = ticket.getPayload(); // Contains user information
+      console.log('Verified Google Token Payload:', payload); // Debugging step
+
+      // Check if the user already exists in the GoogleUser collection
+      const user = await GoogleUser.findOne({ googleId: payload.sub });
+
+      if (user) {
+          // If user exists, log them in
+          res.status(200).send({
+              success: true,
+              user: {
+                  id: user._id,
+                  name: user.name,
+                  email: user.email,
+                  picture: user.picture,
+              },
+              message: 'Login successful!',
+          });
+      } else {
+          // If user does not exist, return an error
+          res.status(404).send({ success: false, message: 'User not registered. Please sign up first.' });
+      }
+  } catch (error) {
+      console.error('Error verifying Google token:', error);
+      res.status(400).send({ success: false, message: 'Invalid token', error: error.message });
+  }
+});
+
+
+// POST route to verify Google token
+router.post('/api/auth/google-signup', async (req, res) => {
+  console.log('Request body:', req.body); // Log incoming request body
+  const { token } = req.body;  // Make sure you extract 'token' from the request body
+
+  if (!token) {
+    return res.status(400).json({ success: false, message: 'Token is required' });
+  }
+
+  try {
+    // Verify the ID token using Google's OAuth2 client
+    const ticket = await client.verifyIdToken({
+      idToken: token,  // Use 'token' here, as sent from frontend
+      audience: process.env.GOOGLE_CLIENT_ID,  // Ensure correct client ID
+    });
+
+    const payload = ticket.getPayload();
+
+    // Check if the user already exists in the GoogleUser collection
+    let user = await GoogleUser.findOne({ googleId: payload.sub });
+
+    if (!user) {
+      // If the user does not exist, create a new one
+      user = new GoogleUser({
+        googleId: payload.sub,
+        email: payload.email,
+        name: payload.name,
+        picture: payload.picture,
+      });
+      await user.save();
+    }
+
+    // Respond with success and user information
+    res.status(200).json({ success: true, user: payload, token: 'generated-jwt-token' }); // Make sure to generate and send a token
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    res.status(401).json({ success: false, message: 'Invalid token' });
+  }
+});
+
+// GitHub authentication route
+router.get('/api/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+
+// GitHub callback route
+router.get(
+  '/api/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/' }),
+  async (req, res) => {
+    try {
+      // Check if user is authenticated and `req.user` is populated
+      if (!req.user) {
+        console.error('Authentication failed: req.user is not set');
+        return res.status(400).send('User not found');
+      }
+
+      console.log('Authenticated GitHub User:', req.user);
+
+      // Check if user exists in DB
+      let user = await GithubUser.findOne({ githubId: req.user.githubId });
+      if (!user) {
+        user = await GithubUser.create({
+          githubId: req.user.githubId,
+          username: req.user.username,
+          profilePic: req.user.profilePic,
+        });
+        console.log('New user created:', user);
+      }
+
+      // Save user to session and redirect
+      req.session.user = user;
+      console.log('User saved to session:', req.session.user);
+      res.redirect('/Dashboard.html');
+    } catch (err) {
+      console.error('Error handling GitHub callback:', err);
+      res.status(500).send('Internal server error');
+    }
+  }
+);
+
+// Check session route (optional for testing)
+router.get('/api/auth/check-session', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).send({ success: true, user: req.user });
+  } else {
+    res.status(401).send({ success: false, message: 'User not logged in' });
+  }
+});
 
 
 
