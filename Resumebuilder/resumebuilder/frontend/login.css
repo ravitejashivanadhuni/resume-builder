@@ -139,6 +139,60 @@ nav .login-btn {
     background: #4e7183; /* Muted Teal */
 }
 
+/* GitHub Sign-In Button */
+.github-btn {
+    display: inline-flex; /* Flex layout for logo and text alignment */
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Space between logo and text */
+    width: 100%; /* Match width of other buttons */
+    padding: 12px; /* Match padding */
+    margin-top: 20px; /* Space between buttons */
+    background-color: #e1e4e8; /* GitHub Black */
+    color: #24292f; /* White text */
+    font-size: 1.1rem; /* Match text size */
+    font-weight: 500; /* Match font weight */
+    text-decoration: none; /* Remove underline */
+    border: none; /* No border */
+    border-radius: 8px; /* Rounded corners */
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    cursor: pointer;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    line-height: 1.5; /* Align text height properly */
+    height: 50px; /* Set height for uniformity */
+}
+
+/* GitHub Logo */
+.github-btn .github-logo {
+    width: 24px; /* Adjust logo size */
+    height: 24px;
+}
+
+/* Hover Effect */
+.github-btn:hover {
+    background-color: #d1d5da; /* Slightly lighter black for hover */
+    transform: translateY(-3px); /* Subtle lift on hover */
+    box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+}
+
+/* Adjust Spacing Between Buttons */
+.social-login {
+    margin-top: 15px; /* Ensure equal spacing between buttons */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .github-btn {
+        font-size: 1rem; /* Adjust font size for smaller screens */
+        height: auto; /* Allow flexibility for smaller screens */
+    }
+    .github-btn .github-logo {
+        width: 20px; /* Adjust logo size */
+        height: 20px;
+    }
+}
+
+
 /* Password Section */
 .password-container {
     display: flex;
