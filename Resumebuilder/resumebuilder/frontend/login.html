@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="login.css">
   <title>Login - Resume Builder</title>
+  <!-- Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <header>
@@ -28,13 +30,39 @@
         </label>
       </div>
       <div class="forgot-password">
-        <!-- Redirecting to forgot-dashboard.html -->
         <a href="forgot-password.html" id="forgot-password-link">Forgot Password?</a>
       </div>
       <button type="submit">Login</button>
     </form>
+
+    <!-- Google Sign-In Button -->
+    <div class="social-login">
+      <div id="g_id_onload"
+        data-client_id="335892097508-qi6munbgs0n52h2gf4fbluf72r242lkt.apps.googleusercontent.com"
+        data-login_uri="http://localhost:5000/api/auth/google-login"
+        data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin"
+        data-type="standard"
+        data-size="large"
+        data-theme="outline"
+        data-text="signin_with"
+        data-shape="rectangular"
+        data-logo_alignment="left">
+      </div>
+    </div>
+
+    <!-- GitHub Sign-In Button -->
+<div class="social-login">
+  <a href="http://localhost:5000/api/auth/github" class="github-btn">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/120px-Octicons-mark-github.svg.png" alt="GitHub Logo" class="github-logo">
+    <span>Sign in with GitHub</span>
+  </a>
+</div>
+
+
     <!-- Message Display -->
-    <p id="message-display"></p>
+    <p id="messageDisplay"></p>
   </div>
   <footer>
     <p>&copy; 2024 Resume Builder. All rights reserved.</p>
