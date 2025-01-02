@@ -1,257 +1,95 @@
-/* Base Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="register.css">
+  <title>Sign Up - Resume Builder</title>
+  <!-- Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <header>
+    <h1>Sign Up</h1>
+  </header>
+  <nav>
+    <a href="home.html">Home</a>
+    <a href="register.html" class="register-btn">Register</a>
+    <a href="login.html">Login</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="container">
+    <form id="register-form">
+      <h2>Create an Account</h2>
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f5f7fa; /* Soft Off-White */
-    color: #4e5d6c; /* Soft Charcoal */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    overflow-x: hidden;
-    transition: all 0.3s ease-in-out;
-}
+      <div class="name-container">
+        <input type="text" name="firstName" id="first-name" placeholder="First Name" required autocomplete="given-name">
+        <input type="text" name="lastName" id="last-name" placeholder="Last Name" autocomplete="family-name">
+      </div>
 
-/* Header Styling */
-header {
-    width: 100%;
-    background: linear-gradient(135deg, #a8c0d8, #f0f4f8); /* Soft Blue to Light Grey */
-    padding: 30px 0;
-    text-align: center;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
+      <input type="email" name="email" id="email" placeholder="Email" required autocomplete="email">
+      <p id="email-existence-message" style="color: red; font-size: 0.9rem;"></p>
 
-header h1 {
-    font-size: 2.8rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: #4e5d6c; /* Soft Charcoal */
-    letter-spacing: 1.5px;
-    transition: color 0.3s ease;
-}
+      <div class="password-container">
+        <input type="password" id="password" name="password" placeholder="Password" required autocomplete="new-password">
+        <p id="password-strength" class="password-strength"></p>
+        <p id="password-suggestion" class="password-suggestion" style="display: none;">
+          Tip: Use a mix of uppercase letters, lowercase letters, numbers, and special characters (e.g., Abc123!@#).
+        </p>
+      </div>
+      <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm Password" required autocomplete="new-password">
 
-header h1:hover {
-    color: #5d8d99; /* Soft Teal */
-}
+      <div class="show-password-container">
+        <label>
+          <input type="checkbox" id="show-password-toggle" data-target="password"> Show Password
+        </label>
+      </div>
 
-/* Navigation Bar Styling */
-nav {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    background: rgba(168, 192, 216, 0.9); /* Semi-transparent Soft Blue */
-    padding: 10px 20px;
-    border-radius: 30px;
-    margin: 20px auto;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: background 0.3s ease;
-}
+      <div id="otp-section" style="display:none;">
+        <input type="text" id="otp" name="otp" placeholder="Enter OTP" required autocomplete="one-time-code" style="display: block;">
+        <button type="button" id="verify-otp">Verify OTP</button>
+      </div>
 
-nav:hover {
-    background: rgba(168, 192, 216, 1); /* Fully opaque on hover */
-}
+      <button type="submit" id="register-button">Register</button>
 
-nav a {
-    font-size: 1.2rem;
-    font-weight: 500;
-    text-decoration: none;
-    padding: 8px 16px;
-    color: #4e5d6c; /* Soft Charcoal */
-    border: 1px solid transparent;
-    border-radius: 20px;
-    transition: all 0.3s ease-in-out;
-}
+      <!-- Google Sign-In Button -->
+      <div class="social-login">
+        <div id="g_id_onload"
+          data-client_id="335892097508-qi6munbgs0n52h2gf4fbluf72r242lkt.apps.googleusercontent.com"
+          data-login_uri="http://localhost:5000/api/auth/google-login"
+          data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+          data-type="standard"
+          data-size="large"
+          data-theme="outline"
+          data-text="signup_with"
+          data-shape="rectangular"
+          data-logo_alignment="left">
+        </div>
+      </div>
 
-/* Register Button Custom Style */
-nav .register-btn {
-    background-color: #ffffff !important; /* White Background */
-    color: #0577ea !important; /* Light Blue Text */
-    border: 1px solid #a8c0d8 !important; /* Light Blue Border */
-}
-
-nav .register-btn:hover {
-    background-color: #a8c0d8 !important; /* Light Blue Background on Hover */
-    color: #ffffff !important; /* White Text on Hover */
-}
-/* GitHub Sign-Up Button */
-.github-btn {
-    display: inline-block;
-    width: 100%;
-    margin-top: 20px; /* Space between other buttons */
-    text-decoration: none; /* Remove underline from link */
-}
-
-.github-btn button {
-    width: 100%;
-    padding: 12px 20px;
-    font-size: 1rem;
-    color: #ffffff; /* White Text */
-    background-color: #24292f; /* GitHub Black */
-    border: none; /* Remove border */
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-/* GitHub Logo */
-.github-btn button .github-logo {
-    width: 20px; /* Adjust logo size */
-    height: auto;
-    margin-right: 10px; /* Space between logo and text */
-}
-
-/* Hover Effect for GitHub Button */
-.github-btn button:hover {
-    background-color: #3e4449; /* Slightly lighter black for hover effect */
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .github-btn button {
-        font-size: 0.9rem;
-        padding: 10px 16px;
-    }
-    .github-btn button .github-logo {
-        width: 18px;
-    }
-}
+      <!-- GitHub Sign-Up Button -->
+<div class="social-login">
+  <a href="http://localhost:5000/api/auth/github" class="github-btn">
+    <button id="github-signup-btn" class="github-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/120px-Octicons-mark-github.svg.png" alt="GitHub Logo" class="github-logo">
+      Sign Up with GitHub
+    </button>
+  </a>
+</div>
 
 
-/* Form Container */
-.container {
-    text-align: center;
-    margin: 40px auto;
-    max-width: 600px;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.95); /* Soft White */
-    border-radius: 15px;
-    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out;
-}
 
-.container:hover {
-    transform: translateY(-5px);
-}
+      <p id="message-display"></p>
+    </form>
+  </div>
 
-.container h2 {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #5d8d99; /* Soft Teal */
-    margin-bottom: 20px;
-}
+  <footer>
+    <p>&copy; 2024 Resume Builder. All rights reserved.</p>
+  </footer>
 
-/* Add spacing between Register and Sign Up with Google button */
-.social-login {
-    margin-top: 20px; /* Adjust as needed */
-}
-
-/* Password Strength Indicator */
-.password-strength {
-    margin-top: 5px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    text-align: left;
-}
-
-.password-strength.weak {
-    color: #e63946; /* Red for weak passwords */
-}
-
-.password-strength.medium {
-    color: #f4a261; /* Orange for medium passwords */
-}
-
-.password-strength.strong {
-    color: #2a9d8f; /* Green for strong passwords */
-}
-
-.password-suggestion {
-    font-size: 0.85rem;
-    font-style: italic;
-    color: #4e5d6c; /* Soft Charcoal */
-    margin-top: 8px;
-}
-
-/* Input Fields */
-.container form input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #e0e4e7; /* Light Grey */
-    border-radius: 8px;
-    background: rgba(240, 240, 240, 0.95); /* Light Grey Background */
-    color: #4e5d6c; /* Soft Charcoal */
-    font-size: 1rem;
-    transition: border-color 0.3s ease-in-out;
-}
-
-.container form input:focus {
-    border-color: #5d8d99; /* Soft Teal */
-    outline: none;
-}
-
-/* Submit Button */
-.container form button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 20px;
-    background: #5d8d99; /* Soft Teal */
-    color: #ffffff;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-}
-
-.container form button:hover {
-    background: #4e7183; /* Muted Teal */
-}
-
-/* Footer Styling */
-footer {
-    width: 100%;
-    background: linear-gradient(135deg, #a8c0d8, #f0f4f8); /* Soft Blue to Light Grey */
-    padding: 20px 0;
-    text-align: center;
-    box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.1);
-    position: relative;
-    margin-top: auto;
-}
-
-footer p {
-    font-size: 1rem;
-    color: #4e5d6c; /* Soft Charcoal */
-    letter-spacing: 1px;
-}
-
-/* Footer - Hover Effect */
-footer:hover {
-    background: linear-gradient(135deg, #f0f4f8, #a8c0d8); /* Inverse Gradient */
-}
-
-/* Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-header, nav, .container, footer {
-    animation: fadeIn 0.8s ease-in-out;
-}
+  <script type="module" src="register.js"></script>
+</body>
+</html>
