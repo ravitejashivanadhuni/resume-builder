@@ -1,4 +1,3 @@
-const { calculateATSScore, generateSuggestions } = require('./atsScore');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client('335892097508-qi6munbgs0n52h2gf4fbluf72r242lkt.apps.googleusercontent.com'); // Use your Google client ID
 const GitHubStrategy = require('passport-github').Strategy;
@@ -6,13 +5,12 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-const atsScoreRoutes = require('./atsScore');
+const atsScoreRoutes = require('./routes/atsScore');
 const User = require('./models/User');
 const GoogleUser = require('./models/GoogleUser'); // Adjust the path if necessary
 const Template = require('./models/Template'); // Ensure you have this path correct
@@ -22,10 +20,20 @@ const googleAuthRoutes = require('./routes/authroutes');
 const cors = require('cors');
 const GithubUser = require('./models/GithubUsers'); // The model for GitHub users
 const MongoStore = require('connect-mongo');
+const {extractTextFromResume} = require('./utils/extractText'); // Ensure this path is correct
+const pdfParse = require('pdf-parse');
+const mammoth = require('mammoth');
+const multer = require('multer'); // For handling file uploads
+const dotenv = require('dotenv');
+const fetch = require('node-fetch');
+const { Document, Packer, Paragraph, TextRun } = require('docx'); // Install with `npm install docx`
+const { calculateATSScore ,calculateATSScoreBasedOnStandards } = require('./utils/atsScoreCalculator');
+//const resumeGenerationRoute = require('./routes/resumeGenerationRoute');
+const fs = require('fs');
+const router = express.Router();
 
 dotenv.config();
 const app = express();
-
 
 // Session middleware
 app.use(
@@ -44,17 +52,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-let userLogged = false; // Flag to check if user has been logged
-
-app.use((req, res, next) => {
-  // Log only once when the user is available and hasn't been logged before
-  if (req.user && !userLogged) {
-    console.log("Authenticated User:", req.user);
-    userLogged = true; // Set the flag to true to prevent further logging
-  }
-  next();
-});
-
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -62,15 +59,160 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors()); // To handle CORS
+app.use('/templets', express.static(path.join(__dirname, 'public/templets')));
+app.use('/api/ats', atsScoreRoutes);
+
+const apiKey = process.env.HUGGING_FACE_API_KEY; // Ensure you have your AI API key set in .env file
+const modelUrl = 'https://api-inference.huggingface.co/models/EleutherAI/gpt-neo-2.7B'; // Update to your AI model endpoint
 
 // Use auth routes
 app.use('/api/auth', authRoutes);
 app.use('/api/templates', templateRoutes); // For template-related routes
 app.use('/api/auth', googleAuthRoutes);
-// Use ATS Score routes
-app.use('/api/ats', atsScoreRoutes);
+
+app.use('/api', router); 
+
+// Configure multer
+const upload = multer({
+  dest: 'uploads/', // Temporary folder for uploaded files
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only .pdf and .docx files are allowed!'), false);
+    }
+  },
+});
+
+// File upload endpoint
+app.post('/upload', upload.single('resume'), (req, res) => {
+  try {
+    console.log('Uploaded file:', req.file);
+    // Process the uploaded file here
+    res.send('File uploaded successfully!');
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+// POST route for ATS score check
+app.post('/api/ats/check-ats-score', upload.single('resume'), async (req, res) => {
+  try {
+    const resumeFile = req.file;
+    const jobDescription = req.body.jobDescription;
+    let resumeText = '';
+
+    // Validate if a resume file is uploaded
+    if (!resumeFile) {
+      return res.status(400).json({ error: 'No resume file uploaded.' });
+    }
+
+    // Extract text from the uploaded resume
+    resumeText = await extractTextFromResume(resumeFile);
+
+    if (jobDescription && jobDescription.trim()) {
+      // Option 2: With job description
+      console.log('Processing with job description:', jobDescription);
+      const atsResult = await calculateATSScore(resumeText, jobDescription);
+      return res.json({
+        atsScore: atsResult.atsScore,
+        suggestions: atsResult.suggestions,
+      });
+    } else {
+      // Option 1: Without job description (based on industry standards)
+      console.log('Processing without job description (industry standards).');
+      const atsResult = await calculateATSScoreBasedOnStandards(resumeText);
+      return res.json({
+        atsScore: atsResult.atsScore,
+        suggestions: atsResult.suggestions,
+      });
+    }
+  } catch (error) {
+    console.error('Error processing ATS score:', error);
+    return res.status(500).json({
+      error: 'Failed to process ATS score. Please try again.',
+      details: error.message,
+    });
+  }
+});
+
+// Function to extract text from DOCX file
+const extractTextFromDocx = async (filePath) => {
+  try {
+      const result = await mammoth.extractRawText({ path: filePath });
+      return result.value;
+  } catch (error) {
+      console.error('Error extracting text from DOCX:', error);
+      throw new Error('Failed to extract text from DOCX');
+  }
+};
+
+// Function to extract text from PDF file
+const extractTextFromPdf = async (filePath) => {
+  try {
+      const pdfBuffer = fs.readFileSync(filePath);
+      const data = await pdfParse(pdfBuffer);
+      return data.text;
+  } catch (error) {
+      console.error('Error extracting text from PDF:', error);
+      throw new Error('Failed to extract text from PDF');
+  }
+};
+
+function extractSection(text, sectionTitle) {
+  try {
+      const sectionRegex = new RegExp(`(?<=${sectionTitle}[^:]*:\\s)(.*?)(?=(\\n\\n|\\z))`, 's');
+      const match = text.match(sectionRegex);
+      return match ? match[0].trim() : `No ${sectionTitle} found.`;
+  } catch (error) {
+      console.error(`Error extracting section "${sectionTitle}":`, error);
+      return `Error extracting ${sectionTitle}.`;
+  }
+}
 
 
+
+
+
+
+
+// Serve template by id
+app.get('/api/templates/:id', async (req, res) => {
+  try {
+    const templateId = req.params.id;
+
+    // If the provided ID is not a valid ObjectId, return an error
+    if (!mongoose.Types.ObjectId.isValid(templateId)) {
+      return res.status(400).json({ success: false, message: 'Invalid template ID' });
+    }
+
+    // Find the template by ID
+    const template = await Template.findById(templateId);
+
+    if (!template) {
+      return res.status(404).json({ success: false, message: 'Template not found' });
+    }
+
+    res.status(200).json({ success: true, template });
+  } catch (error) {
+    console.error('Error fetching template:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+app.post('/api/templates/:id', async (req, res) => {
+  const templateId = req.params.id;
+  const updatedData = req.body;
+  const updatedTemplate = await Template.findByIdAndUpdate(templateId, updatedData, { new: true });
+  if (updatedTemplate) {
+    res.json({ success: true, template: updatedTemplate });
+  } else {
+    res.json({ success: false, message: 'Update failed' });
+  }
+});
 
 
 // Temporary in-memory OTP store (use Redis for production)
@@ -314,13 +456,39 @@ app.post('/seed-templates', async (req, res) => {
 });
 
 // Get all templates route
-app.get('/templates', async (req, res) => {
+app.get('/api/templates', async (req, res) => {
   try {
       const templates = await Template.find();
-      res.status(200).json(templates);
+      res.json({ success: true, templates });  // Use this structure for consistency
   } catch (err) {
-      res.status(500).json({ message: 'Error retrieving templates' });
+      res.status(500).json({ success: false, message: 'Failed to fetch templates' });
   }
+});
+
+// Example of the PUT endpoint in Node.js (using Express.js)
+app.put('/api/template/:id/update', async (req, res) => {
+  const { section, fieldName, newValue } = req.body;
+
+  // Find the template by ID and update the specific field
+  try {
+    const template = await Template.findById(req.params.id);
+    const field = template.editableFields.find(f => f.name === section);
+    
+    if (field) {
+      field.contact[fieldName] = newValue;
+      await template.save();  // Save the updated template
+      res.status(200).json({ success: true, message: 'Field updated successfully' });
+    } else {
+      res.status(400).json({ success: false, message: 'Section not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Serve the static HTML file for editor
+app.get('/editor.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'editor.html'));
 });
 
 // Route to handle ATS score calculation
@@ -408,7 +576,21 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
+app.post('/generate-resume', async (req, res) => {
+  try {
+      const response = await fetch('http://localhost:127.0.0.1:5000/generate-resume', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(req.body),
+      });
 
+      const data = await response.json();
+      res.status(response.status).json(data);
+  } catch (error) {
+      console.error('Error forwarding to Python server:', error.message);
+      res.status(500).json({ error: 'Failed to connect to AI resume generation server.' });
+  }
+});
 
 
 
@@ -484,6 +666,51 @@ app.get(
   }
 );
 
+// Route to serve the DOCX template
+app.get('/template.docx', async (req, res) => {
+  try {
+    // Create a new Word document
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Welcome to the Resume Builder!",
+                  bold: true,
+                  size: 28,
+                }),
+              ],
+            }),
+            new Paragraph({
+              text: "This is a sample dynamically generated DOCX document.",
+            }),
+          ],
+        },
+      ],
+    });
+
+    // Pack the document and send it as a response
+    const buffer = await Packer.toBuffer(doc);
+
+    // Set headers to trigger a file download
+    res.setHeader('Content-Disposition', 'attachment; filename="template.docx"');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    );
+
+    // Send the generated file buffer
+    res.send(buffer);
+  } catch (error) {
+    console.error("Error generating DOCX file:", error);
+    res.status(500).send("Failed to generate DOCX file.");
+  }
+});
+
+
 
 app.get('/api/auth/check-session', (req, res) => {
   if (req.isAuthenticated()) {
@@ -507,7 +734,7 @@ app.get('*', (req, res) => {
 });
 
 // Connect to MongoDB and start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 mongoose
   .connect(process.env.MONGO_URI)
