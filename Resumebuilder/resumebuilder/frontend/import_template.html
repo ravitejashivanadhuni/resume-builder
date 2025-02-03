@@ -9,11 +9,17 @@
 <body>
     <div class="container">
         <h1>Import Template</h1>
-        <p>Use this page to upload your resume template.</p>
-        <form>
-            <input type="file" id="file-upload" accept=".docx, .pdf">
+        <p>Upload a template (PDF, JPG, PNG) to start editing.</p>
+        <form id="upload-form">
+            <input type="file" id="file-upload" accept=".docx, .pdf, .jpg, .png">
             <button type="submit" class="btn">Upload</button>
         </form>
+        <div id="preview-container" style="display: none;">
+            <h2>Template Preview</h2>
+            <div id="template-preview"></div>
+            <button id="start-editing" class="btn">Start Editing</button>
+        </div>
     </div>
+    <script src="import_template.js"></script>
 </body>
 </html>
