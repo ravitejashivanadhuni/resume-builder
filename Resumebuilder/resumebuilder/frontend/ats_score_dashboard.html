@@ -3,26 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATS Score Dashboard</title>
-    <link rel="stylesheet" href="ats_score_dashboard.css">
+    <title>ATS Score Checker</title>
+    <link rel="stylesheet" href="ats_score.css">
 </head>
 <body>
     <div class="container">
         <h1>ATS Score Checker</h1>
-        <p>Analyze your resume for better ATS compatibility and get improvement suggestions.</p>
+        <p>Analyze your resume and job description for ATS compatibility and real-time suggestions.</p>
 
-        <div class="options">
-            <button id="import-resume" class="btn-primary">Import Existing Resume</button>
-            <button id="check-score" class="btn-secondary" disabled>Check ATS Score</button>
-        </div>
-
-        <div id="file-upload-section" class="hidden">
-            <form id="upload-form" class="upload-form">
-                <input type="file" id="resume-file" accept=".docx, .pdf" required>
-                <button type="submit" class="btn-primary">Upload</button>
+        <!-- Step 1: Resume Upload -->
+        <div class="upload-section">
+            <h3>Upload Your Resume</h3>
+            <form id="resume-upload-form">
+                <input type="file" id="resume-file" accept=".pdf, .docx, .txt" required>
             </form>
         </div>
 
+        <!-- Step 2: Options to Proceed -->
+        <div id="options-section" class="hidden">
+            <h3>Choose an Option</h3>
+            <button id="direct-check-score" class="btn-primary">Check ATS Score (Resume Only)</button>
+            <div class="job-desc-section">
+                <h3>Or Paste Job Description</h3>
+                <textarea id="job-description" placeholder="Paste the job description here..." rows="8"></textarea>
+                <button id="compare-check-score" class="btn-secondary">Check ATS Score (With Job Description)</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Results -->
         <div id="score-result-section" class="hidden">
             <h2>ATS Score: <span id="ats-score">0</span>/100</h2>
             <div id="improvement-suggestions">
@@ -32,6 +40,6 @@
         </div>
     </div>
 
-    <script src="ats_score_dashboard.js"></script>
+    <script src="ats_score.js"></script>
 </body>
 </html>
