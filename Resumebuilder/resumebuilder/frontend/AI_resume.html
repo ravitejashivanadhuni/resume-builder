@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fill Details</title>
+  <link rel="stylesheet" href="AI-resume.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Fill Your Details</h1>
+    <form id="resumeForm">
+      <input type="text" id="name" placeholder="Enter your name" required>
+      <input type="text" id="phone" placeholder="Enter your phone number">
+      <input type="email" id="email" placeholder="Enter your email" required>
+      <textarea id="experience" placeholder="Enter your work experience"></textarea>
+      <textarea id="projects" placeholder="Enter your projects"></textarea>
+      <textarea id="skills" placeholder="Enter your skills"></textarea>
+      <textarea id="jobDescription" placeholder="Enter job description" required></textarea>
+      <input type="file" id="resumeFile" accept=".pdf, .docx">
+      <button type="button" id="generateButton">Generate Resume</button>
+  </form>
+  
+  <div id="generatedContent"></div>
+  <script src="AI_resume.js"></script>
+</body>
+</html>
