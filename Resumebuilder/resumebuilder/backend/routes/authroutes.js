@@ -10,7 +10,14 @@ const router = express.Router();
 const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
 const GithubUser = require('../models/GithubUsers'); // The model for GitHub users
+const multer = require('multer');
+const pdfParse = require('pdf-parse');
+const { Document, Packer } = require('docx');
+const natural = require('natural');
+const fs = require('fs');
+const mammoth = require('mammoth');
 require('dotenv').config(); 
+const path = require('path');
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
@@ -22,6 +29,110 @@ function ensureAuthenticated(req, res, next) {
   }
   res.redirect('/login'); // Redirect to login if not authenticated
 }
+
+// Set up Multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only .pdf, .doc, and .docx files are allowed.'));
+    }
+  },
+});
+
+// Function to extract text from DOCX file
+const extractTextFromDocx = (buffer) => {
+  mammoth.extractRawText({ buffer: buffer })
+    .then((result) => {
+      console.log('Extracted text from DOCX:', result.value);
+    })
+    .catch((err) => {
+      console.error('Error extracting text from DOCX:', err);
+    });
+};
+
+// Function to extract text from PDF file
+const extractTextFromPdf = (buffer) => {
+  pdfParse(buffer).then((pdfData) => {
+    console.log('Extracted text from PDF:', pdfData.text);
+  }).catch((err) => {
+    console.error('Error extracting text from PDF:', err);
+  });
+};
+
+// POST route for file upload
+router.post('/upload', upload.single('file'), (req, res) => {
+  try {
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded.' });
+    }
+
+    // Process the file based on its MIME type
+    const fileExtension = file.mimetype;
+
+    if (fileExtension === 'application/pdf') {
+      extractTextFromPdf(file.buffer);  // Handle PDF files
+    } else if (fileExtension === 'application/msword' || fileExtension === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      extractTextFromDocx(file.buffer);  // Handle DOCX or DOC files
+    } else {
+      return res.status(400).json({ error: 'Unsupported file type' });
+    }
+
+    res.status(200).json({ message: 'File processed successfully.' });
+
+  } catch (error) {
+    console.error('Error processing file:', error);
+    res.status(500).json({ error: 'Failed to process the file.' });
+  }
+});
+
+
+// Helper function: Calculate ATS Score
+const calculateATSScore = (resumeText, jobDescription) => {
+  const tokenizer = new natural.WordTokenizer();
+  const resumeWords = tokenizer.tokenize(resumeText.toLowerCase());
+  const jobWords = tokenizer.tokenize(jobDescription.toLowerCase());
+
+  const resumeWordCount = resumeWords.length;
+  const matchCount = jobWords.filter((word) => resumeWords.includes(word)).length;
+
+  const atsScore = Math.round((matchCount / resumeWordCount) * 100);
+  return { atsScore, suggestions: generateSuggestions(resumeWords, jobWords) };
+};
+
+// Helper function: Generate Suggestions
+const generateSuggestions = (resumeWords, jobWords) => {
+  const missingKeywords = jobWords.filter((word) => !resumeWords.includes(word));
+  return missingKeywords.slice(0, 10).map((word) => `Consider adding the keyword: "${word}"`);
+};
+
+// POST route for ATS score check
+router.post('/api/ats/check-ats-score', upload.single('resume'), async (req, res) => {
+  try {
+      const resumeFile = req.file;
+      const jobDescription = req.body.jobDescription;
+
+      if (!resumeFile || !jobDescription) {
+          return res.status(400).json({ error: 'Resume and job description are required.' });
+      }
+
+      // Extract text from the uploaded file
+      const resumeText = await extractTextFromFile(resumeFile);
+
+      // Calculate ATS Score
+      const { atsScore, suggestions } = calculateATSScore(resumeText, jobDescription);
+
+      res.json({ atsScore, suggestions });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to process ATS score.' });
+  }
+});
 
 // Registration Route
 router.post('/register', async (req, res) => {
