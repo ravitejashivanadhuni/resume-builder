@@ -38,21 +38,9 @@ p {
 /* Experience Grid */
 .experience-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Three cards per row */
-    gap: 30px;
+    grid-template-columns: repeat(4, 1fr); /* Four cards per row */
+    gap: 20px; /* Reduced gap to fit cards nicely */
     margin-bottom: 40px;
-}
-
-@media (max-width: 900px) {
-    .experience-grid {
-        grid-template-columns: repeat(2, 1fr); /* Two cards on medium screens */
-    }
-}
-
-@media (max-width: 600px) {
-    .experience-grid {
-        grid-template-columns: 1fr; /* Single column on small screens */
-    }
 }
 
 /* Experience Cards Styling */
@@ -60,7 +48,7 @@ p {
     background: #ffffff;
     border: 2px solid #00796b; /* Teal border for a consistent theme */
     border-radius: 15px;
-    padding: 30px;
+    padding: 20px; /* Reduced padding to make cards smaller */
     text-align: center;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -69,21 +57,11 @@ p {
     background-color: #f1f8f6; /* Light grayish-green background for subtle contrast */
 }
 
-.experience-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-}
-
 /* Icon Styling */
 .icon {
-    font-size: 3.5rem;
+    font-size: 2.5rem; /* Reduced icon size */
     color: #00796b;
-    margin-bottom: 20px;
-    transition: color 0.3s ease;
-}
-
-.icon:hover {
-    color: #004d40; /* Darker teal when hovering */
+    margin-bottom: 15px;
 }
 
 /* Template Grid Styling */
