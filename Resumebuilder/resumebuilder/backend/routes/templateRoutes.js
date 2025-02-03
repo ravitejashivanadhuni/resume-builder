@@ -3,7 +3,7 @@ const Template = require('../models/Template');
 const router = express.Router();
 
 // Route to get all templates
-router.get('/templates', async (req, res) => {
+router.get('/api/templates', async (req, res) => {
   try {
     const templates = await Template.find(); // Fetch all templates
     res.json({ success: true, templates });
@@ -14,7 +14,7 @@ router.get('/templates', async (req, res) => {
 });
 
 // Route to get templates by category (No Experience, Entry Level, etc.)
-router.get('/templates/category/:category', async (req, res) => {
+router.get('/api/templates/category/:category', async (req, res) => {
   const { category } = req.params;
   try {
     const templates = await Template.find({ category }); // Fetch templates by category
@@ -26,22 +26,21 @@ router.get('/templates/category/:category', async (req, res) => {
 });
 
 // Route to get a single template by ID (for editing)
-router.get('/template/:id', async (req, res) => {
-  const { id } = req.params;
+router.get('/api/templates/:id', async (req, res) => {
   try {
-    const template = await Template.findById(id);
-    if (!template) {
-      return res.status(404).json({ success: false, message: 'Template not found' });
-    }
-    res.json({ success: true, template });
+      const template = await Template.findById(req.params.id); // Use ObjectId or string based on your database setup
+      if (!template) {
+          return res.status(404).json({ success: false, message: 'Template not found' });
+      }
+      res.json(template); // Sending template data back to the frontend
   } catch (error) {
-    console.error('Error fetching template by ID:', error);
-    res.status(500).json({ success: false, message: 'Error fetching template' });
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Server error' });
   }
-});
+});                                
 
 // Route to update a template (after editing)
-router.put('/template/:id', async (req, res) => {
+router.put('/api/templates/:id', async (req, res) => {
   const { id } = req.params;
   const { content } = req.body; // Updated content
 
