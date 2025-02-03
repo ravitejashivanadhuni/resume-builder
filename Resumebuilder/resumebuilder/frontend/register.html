@@ -47,9 +47,17 @@
       </div>
 
       <div id="otp-section" style="display:none;">
-        <input type="text" id="otp" name="otp" placeholder="Enter OTP" required autocomplete="one-time-code" style="display: block;">
+        <div class="otp-boxes">
+          <input type="text" id="otp1" class="otp-box" maxlength="1" autocomplete="off" required>
+          <input type="text" id="otp2" class="otp-box" maxlength="1" autocomplete="off" required>
+          <input type="text" id="otp3" class="otp-box" maxlength="1" autocomplete="off" required>
+          <input type="text" id="otp4" class="otp-box" maxlength="1" autocomplete="off" required>
+          <input type="text" id="otp5" class="otp-box" maxlength="1" autocomplete="off" required>
+          <input type="text" id="otp6" class="otp-box" maxlength="1" autocomplete="off" required>
+        </div>
         <button type="button" id="verify-otp">Verify OTP</button>
       </div>
+      
 
       <button type="submit" id="register-button">Register</button>
 
