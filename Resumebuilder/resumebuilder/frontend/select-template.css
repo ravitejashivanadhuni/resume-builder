@@ -1,0 +1,53 @@
+.template-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .template-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .template-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .template-card img {
+    width: 200px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+  
+  .template-card h3 {
+    background: #f5f5f5;
+    margin: 0;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
