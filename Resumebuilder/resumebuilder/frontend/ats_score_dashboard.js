@@ -1,84 +1,96 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const importResumeButton = document.getElementById('import-resume');
-    const checkScoreButton = document.getElementById('check-score');
-    const fileUploadSection = document.getElementById('file-upload-section');
-    const uploadForm = document.getElementById('upload-form');
-    const resumeFileInput = document.getElementById('resume-file');
-    const scoreResultSection = document.getElementById('score-result-section');
-    const atsScoreElement = document.getElementById('ats-score');
-    const suggestionsList = document.getElementById('suggestions-list');
+  const resumeFileInput = document.getElementById('resume-file');
+  const optionsSection = document.getElementById('options-section');
+  const directCheckButton = document.getElementById('direct-check-score');
+  const compareCheckButton = document.getElementById('compare-check-score');
+  const jobDescriptionInput = document.getElementById('job-description');
+  const scoreResultSection = document.getElementById('score-result-section');
+  const atsScoreElement = document.getElementById('ats-score');
+  const suggestionsList = document.getElementById('suggestions-list');
 
-    let uploadedResumeContent = '';
-
-    // Show file upload section
-    importResumeButton.addEventListener('click', () => {
-        fileUploadSection.classList.remove('hidden');
-        scoreResultSection.classList.add('hidden');
-    });
-
-    // Handle file upload
-    uploadForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const file = resumeFileInput.files[0];
-        if (!file) {
-            alert('Please select a file to upload!');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function () {
-            uploadedResumeContent = reader.result;
-            alert(`File "${file.name}" uploaded successfully!`);
-            checkScoreButton.disabled = false;
-            fileUploadSection.classList.add('hidden');
-        };
-        reader.readAsText(file);
-    });
-
-    // Generate ATS Score and Suggestions
-    checkScoreButton.addEventListener('click', () => {
-        if (!uploadedResumeContent) {
-            alert('No resume uploaded yet!');
-            return;
-        }
-
-        // Mock ATS Score Calculation
-        const atsScore = Math.floor(Math.random() * 61) + 40; // Random score between 40 and 100
-        const suggestions = generateSuggestions(atsScore);
-
-        // Display ATS Score
-        atsScoreElement.textContent = atsScore;
-        scoreResultSection.classList.remove('hidden');
-
-        // Display Suggestions
-        suggestionsList.innerHTML = '';
-        suggestions.forEach(suggestion => {
-            const li = document.createElement('li');
-            li.textContent = suggestion;
-            suggestionsList.appendChild(li);
-        });
-    });
-
-    // Generate improvement suggestions based on ATS score
-    function generateSuggestions(score) {
-        const suggestions = [];
-
-        if (score < 70) {
-            suggestions.push('Include more relevant keywords from the job description.');
-            suggestions.push('Use a simple layout with no complex formatting.');
-            suggestions.push('Avoid using images or graphics in your resume.');
-        }
-
-        if (score < 85) {
-            suggestions.push('Add a professional summary at the top of your resume.');
-            suggestions.push('Ensure all sections are clearly labeled.');
-        }
-
-        if (score < 100) {
-            suggestions.push('Double-check for any spelling or grammatical errors.');
-            suggestions.push('Make sure your contact information is up-to-date.');
-        }
-
-        return suggestions;
+  // Show options section after uploading resume
+  resumeFileInput.addEventListener('change', () => {
+    if (resumeFileInput.files.length > 0) {
+      optionsSection.classList.remove('hidden');
     }
+  });
+
+  // Handle direct ATS score check (without job description)
+  directCheckButton.addEventListener('click', async () => {
+    const resumeFile = resumeFileInput.files[0];
+  
+    if (!resumeFile) {
+      alert('Please upload a resume.');
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('resume', resumeFile);
+  
+    try {
+      const response = await fetch('/api/ats/check-ats-score', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        displayATSResult(result);
+      } else {
+        alert(result.error || 'Failed to check ATS score.');
+      }
+    } catch (error) {
+      console.error('Error checking ATS score:', error);
+      alert('An error occurred while processing your request.');
+    }
+  });
+  
+
+  // Handle ATS score check with job description
+  compareCheckButton.addEventListener('click', async () => {
+    const resumeFile = resumeFileInput.files[0];
+    const jobDescription = jobDescriptionInput.value.trim();
+
+    if (!resumeFile) {
+      alert('Please upload a resume first.');
+      return;
+    }
+
+    if (!jobDescription) {
+      alert('Please paste a job description.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('resume', resumeFile);
+    formData.append('jobDescription', jobDescription);
+
+    try {
+      const response = await fetch('/api/ats/check-ats-score-with-job-description', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        displayATSResult(result);
+      } else {
+        alert(result.error || 'Failed to calculate ATS score.');
+      }
+    } catch (error) {
+      alert('Error connecting to the server.');
+    }
+  });
+
+  // Display results in the result section
+  function displayATSResult(result) {
+    atsScoreElement.textContent = result.atsScore;
+    suggestionsList.innerHTML = '';
+    result.suggestions.forEach((suggestion) => {
+      const listItem = document.createElement('li');
+      listItem.textContent = suggestion;
+      suggestionsList.appendChild(listItem);
+    });
+    scoreResultSection.classList.remove('hidden');
+  }
 });
