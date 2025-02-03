@@ -78,34 +78,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Handle OTP Verification
-    verifyOtpButton.addEventListener('click', async () => {
-        const enteredOtp = otpInput.value;
-        const email = registerForm['email'].value;
-
-        try {
-            const response = await fetch(`${apiBaseUrl}/verify-otp`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, otp: enteredOtp }),
-            });
-            const data = await response.json();
-
-            if (data.success) {
-                messageDisplay.textContent = 'OTP verified successfully!';
-                messageDisplay.style.color = 'green';
-                createAccount(); // Proceed to account creation
-            } else {
-                messageDisplay.textContent = data.message || 'Invalid OTP. Please try again.';
-                messageDisplay.style.color = 'red';
-            }
-        } catch (error) {
-            console.error('OTP verification failed:', error);
-            messageDisplay.textContent = 'Error verifying OTP. Please try again.';
-            messageDisplay.style.color = 'red';
-        }
+    // Update OTP boxes input handling for 6 digits
+document.querySelectorAll('.otp-box').forEach((otpBox, index) => {
+    otpBox.addEventListener('input', (event) => {
+      const nextOtpBox = document.querySelector(`#otp${index + 2}`);
+      if (nextOtpBox && event.target.value) {
+        nextOtpBox.focus(); // Focus on the next box after entering a digit
+      }
     });
-
+  });
+  
+  // Handle OTP verification with the 6-digit OTP
+  verifyOtpButton.addEventListener('click', async () => {
+    const otp = Array.from(document.querySelectorAll('.otp-box')).map(otpBox => otpBox.value).join('');
+    const email = registerForm['email'].value;
+  
+    try {
+      const response = await fetch(`${apiBaseUrl}/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp }),
+      });
+      const data = await response.json();
+  
+      if (data.success) {
+        messageDisplay.textContent = 'OTP verified successfully!';
+        messageDisplay.style.color = 'green';
+        createAccount(); // Proceed to account creation
+      } else {
+        messageDisplay.textContent = data.message || 'Invalid OTP. Please try again.';
+        messageDisplay.style.color = 'red';
+      }
+    } catch (error) {
+      console.error('OTP verification failed:', error);
+      messageDisplay.textContent = 'Error verifying OTP. Please try again.';
+      messageDisplay.style.color = 'red';
+    }
+  });
+  
     // Simulate account creation (replace with actual backend account creation logic)
     async function createAccount() {
         const firstName = registerForm['firstName'].value;
@@ -229,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle Google Sign-In for Registration
 window.onload = () => {
     google.accounts.id.initialize({
-      client_id: "335892097508-qi6munbgs0n52h2gf4fbluf72r242lkt.apps.googleusercontent.com", // Your Google Client ID
+      client_id: "335892097508-qi6munbgs0n52h2gf4fbluf72r242lkt.apps.googleusercontent.com", // Google Client ID
       callback: handleGoogleSignUp,
     });
   
@@ -241,7 +251,7 @@ window.onload = () => {
   };
   
   function handleGoogleSignUp(response) {
-    const idToken = response.credential; // Ensure the credential (idToken) is extracted from response
+    const idToken = response.credential; // the credential (idToken) is extracted from response
     console.log('Google ID Token:', idToken); // Log the token for debugging
   
     // Check if the idToken exists before sending it to the backend
