@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First Last - Resume</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: rgb(249, 250, 251);
+      color: rgb(55, 65, 81);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 64rem;
+      margin: 0 auto;
+    }
+
+    .resume {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      overflow: hidden;
+    }
+
+    /* Header styles */
+    header {
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #8B0000;
+      margin-bottom: 0.25rem;
+    }
+
+    header h2 {
+      font-size: 1.25rem;
+      color: rgb(75, 85, 99);
+      font-weight: normal;
+      margin-bottom: 0.75rem;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: rgb(75, 85, 99);
+      font-size: 0.95rem;
+    }
+
+    .contact-info div {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .contact-info i {
+      width: 1rem;
+      height: 1rem;
+      color: rgb(75, 85, 99);
+    }
+
+    /* Content styles */
+    .content {
+      padding: 0 2rem 2rem;
+    }
+
+    section {
+      margin-top: 1.5rem;
+    }
+
+    section h2 {
+      color: #8B0000;
+      font-size: 1.125rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    section h2 i {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .experience {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .job {
+      margin-bottom: 1.25rem;
+    }
+
+    .job:last-child {
+      margin-bottom: 0;
+    }
+
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.25rem;
+    }
+
+    .job-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: rgb(55, 65, 81);
+    }
+
+    .job-header span {
+      color: rgb(75, 85, 99);
+      font-size: 0.95rem;
+    }
+
+    .company-desc {
+      color: rgb(75, 85, 99);
+      font-style: italic;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h4 {
+      font-weight: 600;
+      color: rgb(55, 65, 81);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    ul {
+      padding-left: 1.25rem;
+      list-style-type: disc;
+    }
+
+    li {
+      margin-bottom: 0.375rem;
+      color: rgb(55, 65, 81);
+      font-size: 0.95rem;
+    }
+
+    li:last-child {
+      margin-bottom: 0;
+    }
+
+    .skills {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .skills h3 {
+      font-weight: 600;
+      color: rgb(55, 65, 81);
+      font-size: 1rem;
+    }
+
+    .skills p {
+      color: rgb(55, 65, 81);
+      font-size: 0.95rem;
+    }
+
+    .short-position {
+      margin-bottom: 0.5rem;
+    }
+
+    .short-position:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Responsive design */
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+
+      header, .content {
+        padding: 1rem;
+      }
+
+      .contact-info {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .job-header {
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="resume">
+      <!-- Header -->
+      <header>
+        <h1>First Last</h1>
+        <h2>PL/SQL Developer</h2>
+        
+        <div class="contact-info">
+          <div>
+            <i data-lucide="map-pin"></i>
+            <span>Richmond, Virginia</span>
+          </div>
+          <div>
+            <i data-lucide="phone"></i>
+            <span>+1-234-456-789</span>
+          </div>
+          <div>
+            <i data-lucide="mail"></i>
+            <span>professionalemail@resumeworded.com</span>
+          </div>
+          <div>
+            <i data-lucide="linkedin"></i>
+            <span>linkedin.com/in/username</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Work Experience -->
+        <section>
+          <h2>
+            <i data-lucide="briefcase"></i>
+            Work Experience
+          </h2>
+          
+          <div class="experience">
+            <!-- Resume Worded -->
+            <div class="job">
+              <div class="job-header">
+                <h3>Resume Worded, New York, NY</h3>
+                <span>09/2015 – Present</span>
+              </div>
+              <p class="company-desc">Augmented reality startup with 50+ employees and $100m+ annual revenue</p>
+              <h4>PL/SQL Developer</h4>
+              <ul>
+                <li>Developed 10+ tables and modified 20+ existing ones to support a product launch; recorded zero downtime during the transition.</li>
+                <li>Provided senior management with efficient decision-making by creating 100+ complex SQL queries to support data analysis.</li>
+                <li>Extracted data from 40+ sources and transformed them into a single format for easy reporting by creating 5 ETL packages using Oracle PL/SQL.</li>
+                <li>Migrated over 100TB of data from an obsolete database server to a new one with zero downtime or loss of data within 20 days of employment.</li>
+              </ul>
+            </div>
+
+            <!-- Polyhire -->
+            <div class="job">
+              <div class="job-header">
+                <h3>Polyhire, London, United Kingdom</h3>
+                <span>10/2012 – 08/2015</span>
+              </div>
+              <p class="company-desc">Provides quality assurance and control testing for global markets</p>
+              <h4>Oracle Functional Consultant</h4>
+              <ul>
+                <li>Championed the installation of Oracle Financials software at 20+ Fortune 500 companies, which increased 92% of their operational efficiency.</li>
+                <li>Pioneered implementation of multi-tenant support services and a complete suite of Cloud Services for HR, sales, and 10+ other business units.</li>
+                <li>Designed an e-commerce platform that enabled 7600+ clients to transact business via mobile devices, elevating Polyhire's earnings by 94% in the first year of implementation.</li>
+              </ul>
+            </div>
+
+            <!-- Growthsi -->
+            <div class="job">
+              <div class="job-header">
+                <h3>Growthsi, London, United Kingdom</h3>
+                <span>07/2010 – 09/2012</span>
+              </div>
+              <p class="company-desc">Career training and membership SaaS with 150,000 paying users</p>
+              <h4>SQL DBA</h4>
+              <ul>
+                <li>Explained backup policies of data to leadership during a 20-day seminar that non-technical attendees attended.</li>
+                <li>Controlled access to applications and data by 4000+ users, saving $200K in annual licensing fees in the first year of employment.</li>
+                <li>Consolidated 50+ SQL Server databases into ten and merged all company hardware, reducing 70% of the original hardware acquisition cost.</li>
+              </ul>
+            </div>
+
+            <!-- Short Positions -->
+            <div class="short-position">
+              <div class="job-header">
+                <h3>Technology Architect, ABC Company, London, United Kingdom</h3>
+                <span>11/2008 – 12/2009</span>
+              </div>
+            </div>
+
+            <div class="short-position">
+              <div class="job-header">
+                <h3>Oracle Apps DBA, XYZ Company, London, United Kingdom</h3>
+                <span>07/2005 – 10/2008</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Education -->
+        <section>
+          <h2>
+            <i data-lucide="graduation-cap"></i>
+            Education
+          </h2>
+          
+          <div class="education">
+            <div class="job-header">
+              <h3>Resume Worded University, New York, NY</h3>
+              <span>06/2005</span>
+            </div>
+            <p>Associate of Applied Science — Computer Programming</p>
+          </div>
+        </section>
+
+        <!-- Skills -->
+        <section>
+          <h2>
+            <i data-lucide="wrench"></i>
+            Skills
+          </h2>
+          
+          <div class="skills">
+            <div>
+              <h3>Hard Skills</h3>
+              <p>Database Design (Advanced), Data Modeling (Experienced), Reporting and Analytics, SQL</p>
+            </div>
+            <div>
+              <h3>Techniques</h3>
+              <p>Autonomous Transactions, Code Encryption, Conditional Compilation, Database Triggers</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
