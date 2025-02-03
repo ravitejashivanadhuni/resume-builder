@@ -68,6 +68,29 @@ nav a {
     border-radius: 20px;
     transition: all 0.3s ease-in-out;
 }
+/* Style for OTP Boxes */
+.otp-boxes {
+    display: flex;
+    justify-content: space-between;
+    max-width: 300px;  /* Adjust width to fit 6 smaller boxes */
+    margin: 20px auto;
+    gap: 10px;  /* Adds space between each OTP box */
+  }
+  
+  .otp-box {
+    width: 40px;  /* Smaller width for each box */
+    height: 50px;  /* Smaller height */
+    font-size: 1.5rem;  /* Smaller font size */
+    text-align: center;
+    border: 1px solid #e0e4e7;
+    border-radius: 8px;
+    background: rgba(240, 240, 240, 0.95);
+  }
+  
+  .otp-box:focus {
+    border-color: #5d8d99; /* Soft Teal */
+    outline: none;
+  }
 
 /* Register Button Custom Style */
 nav .register-btn {
