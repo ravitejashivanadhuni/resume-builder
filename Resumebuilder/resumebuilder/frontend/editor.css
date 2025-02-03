@@ -1,0 +1,89 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    max-width: 1000px; /* Adjust the max width as needed */
+    gap: 20px;
+}
+
+.left {
+    width: 70%; /* Takes 70% of the container width */
+    padding: 20px;
+}
+
+.right {
+    width: 30%; /* Takes 30% of the container width */
+    padding: 20px;
+    border-left: 2px solid #ccc;
+}
+
+/* Form Styles */
+input, textarea {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+}
+
+textarea {
+    height: 80px;
+}
+
+/* Resume Template Styles */
+.resume-template {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.section-title {
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.section-content {
+    margin-top: 5px;
+}
+
+/* Styling for form fields */
+label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+}
+
+.export-btn {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.export-btn:hover {
+    background-color: #0056b3;
+}
